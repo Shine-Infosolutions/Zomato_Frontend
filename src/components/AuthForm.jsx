@@ -15,17 +15,21 @@ const AuthForm = () => {
   };
 
   if (currentView === "otp") {
-    return <OTPVerification email={otpEmail} onBack={switchToLogin} />;
+    return (
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 mx-4">
+          <OTPVerification email={otpEmail} onBack={switchToLogin} />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        {currentView === "login" ? (
-          <LoginForm onSwitchToRegister={switchToRegister} onSwitchToOTP={switchToOTP} />
-        ) : (
-          <RegisterForm onSwitchToLogin={switchToLogin} onSwitchToOTP={switchToOTP} />
-        )}
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mx-4">
+      <div className="p-4 sm:p-6">
+          {currentView === "login" ? (
+            <LoginForm onSwitchToRegister={switchToRegister} onSwitchToOTP={switchToOTP} />
+          ) : (
+            <RegisterForm onSwitchToLogin={switchToLogin} onSwitchToOTP={switchToOTP} />
+          )}
       </div>
     </div>
   );

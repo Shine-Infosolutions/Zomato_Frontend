@@ -345,133 +345,158 @@ const MapAddressSelector = ({ isOpen, onClose, onAddressSelect, onParentClose, r
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg w-full max-w-md mx-4 max-h-[95vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Select Delivery Location</h2>
-          <button onClick={onClose} className="text-gray-500">
-            <FaTimes />
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-gray-50">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Select Delivery Location</h2>
+          <button 
+            onClick={onClose} 
+            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <FaTimes className="w-4 h-4" />
           </button>
         </div>
 
         <div className="relative">
           <div
             id="address-selector-map"
-            className="w-full h-[300px] relative bg-gray-100 block visible"
+            className="w-full h-[250px] sm:h-[300px] relative bg-gradient-to-br from-blue-50 to-green-50 block visible"
           ></div>
           
           <button
             onClick={getCurrentLocation}
             disabled={isLoading}
-            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-lg border"
+            className="absolute top-3 right-3 bg-white p-3 rounded-full shadow-lg border hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            <FaLocationArrow className="text-red-600" />
+            <FaLocationArrow className="text-red-600 w-4 h-4" />
           </button>
           
-          <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded text-xs shadow">
-            🍽️ Red: Restaurant | 📍 Blue: Your Location
+          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg text-xs shadow-lg border">
+            <div className="flex items-center gap-2">
+              <span>🍽️ Restaurant</span>
+              <span>📍 Your Location</span>
+            </div>
           </div>
         </div>
 
-        <div className="p-4 overflow-y-auto flex-1">
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Selected Address:</label>
-            <div className="p-2 bg-gray-50 rounded text-sm min-h-[40px]">
-              {isLoading ? 'Getting address...' : address || 'Select location on map'}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Selected Address:</label>
+            <div className="p-3 bg-gray-50 rounded-xl text-sm min-h-[50px] border">
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full"></div>
+                  Getting address...
+                </div>
+              ) : (
+                address || 'Click on map to select location'
+              )}
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">House/Flat Number*</label>
-              <input 
-                type="text" 
-                value={addressFields.houseNumber}
-                onChange={(e) => setAddressFields({...addressFields, houseNumber: e.target.value})}
-                placeholder="123" 
-                className="w-full p-2 border rounded text-sm" 
-              />
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">House/Flat Number*</label>
+                <input 
+                  type="text" 
+                  value={addressFields.houseNumber}
+                  onChange={(e) => setAddressFields({...addressFields, houseNumber: e.target.value})}
+                  placeholder="e.g. 123, A-45" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address*</label>
+                <input 
+                  type="text" 
+                  value={addressFields.street}
+                  onChange={(e) => setAddressFields({...addressFields, street: e.target.value})}
+                  placeholder="e.g. Main Street, Park Road" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Street Address*</label>
-              <input 
-                type="text" 
-                value={addressFields.street}
-                onChange={(e) => setAddressFields({...addressFields, street: e.target.value})}
-                placeholder="Main Street" 
-                className="w-full p-2 border rounded text-sm" 
-              />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">City*</label>
+                <input 
+                  type="text" 
+                  value={addressFields.city}
+                  onChange={(e) => setAddressFields({...addressFields, city: e.target.value})}
+                  placeholder="e.g. Gorakhpur" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                <input 
+                  type="text" 
+                  value={addressFields.state}
+                  onChange={(e) => setAddressFields({...addressFields, state: e.target.value})}
+                  placeholder="e.g. Uttar Pradesh" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">City*</label>
-              <input 
-                type="text" 
-                value={addressFields.city}
-                onChange={(e) => setAddressFields({...addressFields, city: e.target.value})}
-                placeholder="Delhi" 
-                className="w-full p-2 border rounded text-sm" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">State</label>
-              <input 
-                type="text" 
-                value={addressFields.state}
-                onChange={(e) => setAddressFields({...addressFields, state: e.target.value})}
-                placeholder="Delhi" 
-                className="w-full p-2 border rounded text-sm" 
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Pincode*</label>
-              <input 
-                type="text" 
-                value={addressFields.pincode}
-                onChange={(e) => setAddressFields({...addressFields, pincode: e.target.value})}
-                placeholder="110001" 
-                className="w-full p-2 border rounded text-sm" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Landmark</label>
-              <input 
-                type="text" 
-                value={addressFields.landmark}
-                onChange={(e) => setAddressFields({...addressFields, landmark: e.target.value})}
-                placeholder="Near Metro Station" 
-                className="w-full p-2 border rounded text-sm" 
-              />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Pincode*</label>
+                <input 
+                  type="text" 
+                  value={addressFields.pincode}
+                  onChange={(e) => setAddressFields({...addressFields, pincode: e.target.value})}
+                  placeholder="e.g. 273001" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Landmark</label>
+                <input 
+                  type="text" 
+                  value={addressFields.landmark}
+                  onChange={(e) => setAddressFields({...addressFields, landmark: e.target.value})}
+                  placeholder="e.g. Near Metro Station" 
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all" 
+                />
+              </div>
             </div>
           </div>
           
           {distance && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Distance from Restaurant:</label>
-              <div className="p-2 bg-blue-50 rounded text-sm">
-                {distance.toFixed(2)} km
+            <div className="mt-6 mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Distance from Restaurant:</label>
+              <div className="p-3 bg-blue-50 rounded-xl text-sm border border-blue-200">
+                <div className="flex items-center gap-2">
+                  <span className="text-blue-600">📍</span>
+                  <span className="font-medium">{distance.toFixed(2)} km away</span>
+                </div>
               </div>
             </div>
           )}
           
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-4 border-t">
             <button
               onClick={onClose}
-              className="flex-1 py-2 border border-gray-300 rounded-lg"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!address || isLoading}
-              className="flex-1 py-2 bg-red-600 text-white rounded-lg disabled:bg-gray-400"
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              Confirm Location
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  Saving...
+                </div>
+              ) : (
+                'Confirm Location'
+              )}
             </button>
           </div>
         </div>
