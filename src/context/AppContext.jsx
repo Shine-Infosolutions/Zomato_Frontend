@@ -405,7 +405,7 @@ export const AppContextProvider = ({ children }) => {
       }
       
       const response = await fetch(`${API_URL}/api/address/delete`, {
-        method: 'POST',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user._id,

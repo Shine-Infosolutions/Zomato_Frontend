@@ -170,7 +170,7 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-16">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">Select Location</h2>
@@ -214,37 +214,7 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
         </div>
 
         {/* Results */}
-        <div className="max-h-[60vh] overflow-y-auto pb-4">
-          {/* Search Results */}
-          {searchQuery && (
-            <div className="p-4 border-b">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Search Results</h3>
-              {isSearching ? (
-                <div className="text-center py-4 text-gray-500">Searching...</div>
-              ) : searchResults.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">No results found</div>
-              ) : (
-                searchResults.map((result) => (
-                  <button
-                    key={result.id}
-                    onClick={() => onLocationSelect(result)}
-                    className="flex items-start w-full p-3 text-left hover:bg-gray-50 rounded-lg mb-2"
-                  >
-                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3 mt-1">
-                      📍
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{result.name}</div>
-                      <div className="text-sm text-gray-500 line-clamp-2">
-                        {result.address}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-          )}
-
+        <div className="max-h-96 overflow-y-auto">
           {/* Saved Addresses */}
           <div className="p-4 border-b">
             <h3 className="text-sm font-medium text-gray-700 mb-2">Saved Addresses</h3>
@@ -306,6 +276,36 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
               </div>
             )}
           </div>
+
+          {/* Search Results */}
+          {searchQuery && (
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Search Results</h3>
+              {isSearching ? (
+                <div className="text-center py-4 text-gray-500">Searching...</div>
+              ) : searchResults.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">No results found</div>
+              ) : (
+                searchResults.map((result) => (
+                  <button
+                    key={result.id}
+                    onClick={() => onLocationSelect(result)}
+                    className="flex items-start w-full p-3 text-left hover:bg-gray-50 rounded-lg"
+                  >
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                      📍
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium">{result.name}</div>
+                      <div className="text-sm text-gray-500 line-clamp-2">
+                        {result.address}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
         </div>
         
         {/* Map Address Selector Modal */}
