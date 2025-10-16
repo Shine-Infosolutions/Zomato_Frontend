@@ -31,7 +31,7 @@ const CurrentOrder = () => {
   //       const userId = JSON.parse(localStorage.getItem('user'))?.uid;
   //       if (!userId) return;
 
-  //       const response = await fetch(`http://localhost:4000/api/user/currentorder`, {
+  //       const response = await fetch(`https://24-7-b.vercel.app/api/user/currentorder`, {
   //         method: 'POST',
   //         headers: { 'Content-Type': 'application/json' },
   //         body: JSON.stringify({ firebaseUid: userId })

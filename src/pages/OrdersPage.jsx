@@ -95,7 +95,7 @@ const OrdersPage = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:4000/api/user/getorders`,
+          `https://24-7-b.vercel.app/api/user/getorders`,
           {
             method: "POST",
             headers: {

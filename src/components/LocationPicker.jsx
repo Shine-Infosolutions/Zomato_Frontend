@@ -10,6 +10,52 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
   const searchTimeoutRef = useRef(null);
   const { addresses, setSelectedAddressId } = useAppContext();
 
+  // Get current location
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setIsSearching(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          
+          try {
+            const response = await fetch(
+              `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=68356bb1a3afb750007085wdx475b3a`
+            );
+            const data = await response.json();
+            
+            const locationData = {
+              id: 'current-location',
+              name: 'Current Location',
+              address: data.display_name || `${latitude}, ${longitude}`,
+              lat: latitude,
+              lng: longitude,
+              type: 'current'
+            };
+            
+            setCurrentLocation(locationData);
+            onLocationSelect(locationData);
+          } catch (error) {
+            console.error('Failed to get address for current location:', error);
+          } finally {
+            setIsSearching(false);
+          }
+        },
+        () => {
+          setIsSearching(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  };
+
+  // Auto-get current location when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      getCurrentLocation();
+    }
+  }, [isOpen]);
+
   // Search locations using MapmyIndia API
   const searchLocations = async (query) => {
     if (!query.trim() || query.length < 3) {
@@ -82,49 +128,7 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
     };
   }, [searchQuery]);
 
-  // Get current location
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      setIsSearching(true);
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          
-          try {
-            // Reverse geocode to get address
-            const response = await fetch(
-              `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=68356bb1a3afb750007085wdx475b3a`
-            );
-            const data = await response.json();
-            
-            const locationData = {
-              id: 'current-location',
-              name: 'Current Location',
-              address: data.display_name || `${latitude}, ${longitude}`,
-              lat: latitude,
-              lng: longitude,
-              type: 'current'
-            };
-            
-            setCurrentLocation(locationData);
-            onLocationSelect(locationData);
-          } catch (error) {
-            console.error('Failed to get address for current location:', error);
-          } finally {
-            setIsSearching(false);
-          }
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          alert('Unable to get current location');
-          setIsSearching(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    } else {
-      alert('Geolocation not supported by this browser');
-    }
-  };
+
 
   if (!isOpen) return null;
 

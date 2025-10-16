@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:4000/api/address";
+const API_URL = "https://24-7-b.vercel.app/api/address";
 
 export const addAddress = async (addressData) => {
   try {
