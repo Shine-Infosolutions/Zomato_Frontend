@@ -24,9 +24,9 @@ const SavedAddresses = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // useEffect(() => {
-  //   fetchAddresses(); // Always fetch addresses when this page mounts
-  // }, []);
+  useEffect(() => {
+    fetchAddresses(); // Always fetch addresses when this page mounts
+  }, []);
 
   const handleSelectAddress = (addressId) => {
     setSelectedAddressId(addressId);

@@ -131,7 +131,7 @@ const OrderDetailsPage = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:4000/api/user/order/${orderId}`
+          `https://24-7-b.vercel.app/api/user/order/${orderId}`
         );
         const data = await response.json();
 

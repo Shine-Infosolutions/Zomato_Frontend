@@ -28,7 +28,10 @@ const Send = () => {
     }
     setTimer(15);
     setIsResendDisabled(true);
-    toast.success("OTP resent successfully!");
+    
+    setTimeout(() => {
+      toast.success("OTP resent successfully!");
+    }, 1000);
   };
 
 

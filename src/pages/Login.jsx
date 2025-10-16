@@ -1,13 +1,13 @@
 import React from 'react'
 import Banner from '../components/Banner'
-import LoginForm from '../components/LoginForm'
+import AuthForm from '../components/AuthForm'
 
 const Login = () => {
   
   return (
     <div>
       <Banner />
-      <LoginForm/>
+      <AuthForm/>
     </div>
   )
 }

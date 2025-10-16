@@ -21,15 +21,18 @@ const FoodSlider = ({ onCategoryClick }) => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4000/api/user/category"
+          `${import.meta.env.VITE_API_BASE_URL}/api/category/get`
         );
         const data = await response.json();
-
+        
+        console.log('Categories API response:', data);
+        
+        // Handle both array and object responses
         if (data.success && data.categories) {
           setCategories(data.categories);
         } else {
-          // Fallback to default categories if API fails
-          // setCategories(defaultCategories);
+          const categories = Array.isArray(data) ? data : [];
+          setCategories(categories);
         }
       } catch (error) {
         // console.error("Error fetching categories:", error);
@@ -79,10 +82,18 @@ const FoodSlider = ({ onCategoryClick }) => {
                 className="flex flex-col items-center cursor-pointer transition-transform hover:scale-105"
                 onClick={() => handleCategoryClick(category)}
               >
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl shadow-md">
-                  {category.image || "🍽️"}
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl shadow-md overflow-hidden">
+                  {category.image && category.image.startsWith('http') ? (
+                    <img 
+                      src={category.image} 
+                      alt={category.category || category.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    category.image || "🍽️"
+                  )}
                 </div>
-                <p className="mt-2 text-sm font-medium">{category.name}</p>
+                <p className="mt-2 text-sm font-medium">{category.category?.replace(/"/g, '') || category.name?.replace(/"/g, '') || 'Category'}</p>
               </div>
             ))}
           </div>

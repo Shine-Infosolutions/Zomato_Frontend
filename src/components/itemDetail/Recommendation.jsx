@@ -45,6 +45,7 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
   };
 
   const filterOptions = [
+    "All",
     "Recommended",
     "Rating",
     "Price: Low to High",
@@ -76,30 +77,59 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
       try {
         setLoading(true);
 
-        // Fetch both items and categories
+        // Fetch both items and categories directly without cache
         const [itemsResponse, categoriesResponse] = await Promise.all([
-          fetchFoodItems(),
-          fetch("http://localhost:4000/api/user/category").then(
-            (res) => res.json()
-          ),
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/item/get`).then(res => res.json()),
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/category/get`).then(res => res.json())
         ]);
-
-        const items = itemsResponse;
-        const categories = categoriesResponse.success
-          ? categoriesResponse.categories
-          : [];
-
-        // Create a mapping of category IDs to names from the API
+        
+        // Extract items from response
+        const rawItems = itemsResponse.itemsdata || itemsResponse.items || itemsResponse.data || [];
+        
+        // Format items
+        const items = rawItems.map(item => ({
+          _id: item._id,
+          id: item._id,
+          name: item.name,
+          categoryId: item.category?._id || item.category,
+          price: parseFloat(item.price),
+          priceFormatted: `₹${item.price}`,
+          rating: item.rating || 4.5,
+          image: item.image,
+          veg: item.veg,
+          description: item.description,
+          longDescription: item.longDescription,
+          variation: item.variation || [],
+          addon: item.addon || []
+        }));
+        
+        console.log('Items fetched:', items);
+        console.log('Categories fetched:', categoriesResponse);
+        
+        // Create category mapping
         const categoryMapping = {};
+        let categories = [];
+        if (categoriesResponse.success && categoriesResponse.categories) {
+          categories = categoriesResponse.categories;
+        } else if (Array.isArray(categoriesResponse)) {
+          categories = categoriesResponse;
+        }
         categories.forEach((category) => {
-          categoryMapping[category.id] = category.name;
+          const cleanName = (category.category || category.name || 'Category').replace(/"/g, '');
+          categoryMapping[category._id] = cleanName;
         });
+        
+        // If no items, show error
+        if (!items || items.length === 0) {
+          setError('No items found');
+          return;
+        }
 
         // Group items by category
         const groupedItems = items.reduce((acc, item) => {
           const categoryId = item.categoryId ? item.categoryId : 0;
           // Use API category name if available, otherwise use a default name
-          const categoryName = categoryMapping[categoryId] || `Other Items`;
+          const categoryName = categoryMapping[categoryId] || 'Other Items';
 
           if (!acc[categoryName]) {
             acc[categoryName] = {
@@ -186,6 +216,9 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
         case "Delivery Time":
           sortedItems.sort((a, b) => a.deliveryTime - b.deliveryTime);
           break;
+        case "All":
+          // No sorting, keep original order
+          break;
         case "Recommended":
         default:
           // For recommended, prioritize bestsellers and higher ratings
@@ -252,7 +285,7 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
   };
 
   // Check if a non-default filter is active
-  const isNonDefaultFilterActive = activeFilter !== "Recommended";
+  const isNonDefaultFilterActive = activeFilter !== "Recommended" && activeFilter !== "All";
 
   if (loading) {
     return <div className="p-3 bg-white">Loading recommendations...</div>;

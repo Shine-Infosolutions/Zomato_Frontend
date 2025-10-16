@@ -12,8 +12,8 @@ const AddOns = ({ food, onAddonsChange }) => {
 
   const handleToggle = (addon) => {
     let updated;
-    if (selectedAddons.some((a) => a.id === addon.id)) {
-      updated = selectedAddons.filter((a) => a.id !== addon.id);
+    if (selectedAddons.some((a) => (a._id || a.id) === (addon._id || addon.id))) {
+      updated = selectedAddons.filter((a) => (a._id || a.id) !== (addon._id || addon.id));
     } else {
       updated = [...selectedAddons, addon];
     }
@@ -32,18 +32,18 @@ const AddOns = ({ food, onAddonsChange }) => {
         </p>
       </div>
       <div>
-        {food.addon.map((addon) => (
+        {food.addon.map((addon, index) => (
           <label
-            key={addon.id}
+            key={addon._id || addon.id || index}
             className={`flex items-center p-2 rounded cursor-pointer border ${
-              selectedAddons.some((a) => a.id === addon.id)
+              selectedAddons.some((a) => (a._id || a.id) === (addon._id || addon.id))
                 ? "border-none bg-blue-50"
                 : "border-none"
             }`}
           >
             <input
               type="checkbox"
-              checked={selectedAddons.some((a) => a.id === addon.id)}
+              checked={selectedAddons.some((a) => (a._id || a.id) === (addon._id || addon.id))}
               onChange={() => handleToggle(addon)}
               className="mr-2 accent-blue-600"
             />

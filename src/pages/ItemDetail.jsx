@@ -26,7 +26,8 @@ const ItemDetail = () => {
 
   // Check if the current item is in the cart
   useEffect(() => {
-    const itemInCart = cart.some(
+    const cartItems = Object.values(cart || {});
+    const itemInCart = cartItems.some(
       (item) => item.name === foodItem.name && item.price === foodItem.price
     );
     setIsItemInCart(itemInCart);
@@ -63,7 +64,7 @@ const ItemDetail = () => {
     }, 3000);
   };
 
-  const totalItems = Object.values(cart).reduce(
+  const totalItems = Object.values(cart || {}).reduce(
     (total, item) => total + item.quantity,
     0
   );

@@ -17,6 +17,7 @@ const Home = () => {
   const [currentCustomization, setCurrentCustomization] = useState(null);
   const [customizationQuantity, setCustomizationQuantity] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchFilter, setSearchFilter] = useState('');
   const {
     cart,
     addToCartWithQuantity,
@@ -98,9 +99,9 @@ const Home = () => {
 
   return (
     <div className="max-w-xl mx-auto">
-      <Header selectedAddress={selectedAddress} />
+      <Header selectedAddress={selectedAddress} onSearchSelect={setSearchFilter} />
       <FoodSlider onCategoryClick={handleCategoryClick} />
-      <FoodItemGrid onFoodClick={handleFoodClick} />
+      <FoodItemGrid onFoodClick={handleFoodClick} searchFilter={searchFilter} />
       <div id="recommendations-section">
         <Recommendation
           onFoodClick={handleFoodClick}

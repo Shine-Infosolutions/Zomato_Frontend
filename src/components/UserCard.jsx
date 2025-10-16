@@ -4,9 +4,15 @@ import { useAppContext } from "../context/AppContext";
 
 const UserCard = () => {
   const { user } = useAppContext();
+  
+  // Fallback to localStorage if context user is not available
+  const currentUser = user || JSON.parse(localStorage.getItem("user") || "{}");
+  
+  console.log('UserCard - Context user:', user);
+  console.log('UserCard - Current user:', currentUser);
 
   // Get first letter of name or use "U" as default
-  const firstLetter = user?.name ? user.name.charAt(0).toUpperCase() : "U";
+  const firstLetter = currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : "U";
 
   // Generate a consistent color based on the first letter
   const getColorForLetter = (letter) => {
@@ -35,9 +41,9 @@ const UserCard = () => {
         <span className="text-xl font-bold">{firstLetter}</span>
       </div>
       <div className="flex flex-col">
-        <h1 className="text-lg font-semibold">{user?.name || "User Name"}</h1>
+        <h1 className="text-lg font-semibold">{currentUser?.name || "User Name"}</h1>
         <p className="text-sm">
-          {user?.email || user?.phone || "user@example.com"}
+          {currentUser?.email || currentUser?.phone || "user@example.com"}
         </p>
       </div>
     </div>

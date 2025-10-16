@@ -29,11 +29,11 @@ const VariationOptions = ({ food, onVariationChange }) => {
       </p>
 
       <div className="mt-5">
-        {food.variation.map((variation) => (
+        {food.variation.map((variation, index) => (
           <label
-            key={variation.id}
+            key={variation.id || variation._id || `variation-${index}`}
             className={`flex items-center p-2 rounded cursor-pointer border ${
-              selectedVariation?.id === variation.id
+              selectedVariation?.id === variation.id || selectedVariation?._id === variation._id
                 ? "border-green-600 bg-green-50"
                 : "border-gray-200"
             }`}
@@ -41,7 +41,7 @@ const VariationOptions = ({ food, onVariationChange }) => {
             <input
               type="radio"
               name="variation"
-              checked={selectedVariation?.id === variation.id}
+              checked={selectedVariation?.id === variation.id || selectedVariation?._id === variation._id}
               onChange={() => handleChange(variation)}
               className="mr-2 accent-green-600"
             />
