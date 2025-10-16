@@ -200,10 +200,10 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
                   className="flex items-start w-full p-3 text-left hover:bg-gray-50 rounded-lg"
                 >
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3 mt-1">
-                    {address.type === 'home' ? '🏠' : '🏢'}
+                    {address.type === 'Home' ? '🏠' : address.type === 'Work' ? '🏢' : '📍'}
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{address.type}</div>
+                    <div className="font-medium">{address.nickname || address.type}</div>
                     <div className="text-sm text-gray-500">
                       {address.house_no}, {address.street}
                     </div>

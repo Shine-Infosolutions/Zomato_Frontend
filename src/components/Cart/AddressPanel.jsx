@@ -151,7 +151,7 @@ const AddressPanel = ({ showPanel, togglePanel, onSelectAddress }) => {
                   <div className="flex justify-between">
                     <div className="flex items-center">
                       <FaMapMarkerAlt className="text-green-600 mr-2" />
-                      <span className="font-medium">{address.type}</span>
+                      <span className="font-medium">{address.nickname || address.type}</span>
                     </div>
                     <div className="flex gap-2">
                       <button

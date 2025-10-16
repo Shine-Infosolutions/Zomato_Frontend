@@ -87,7 +87,7 @@ const OrdersPage = () => {
   useEffect(() => {
     // Fetch real orders from API
     const fetchOrders = async () => {
-      if (!user || !user._id) {
+      if (!user || !user.phone) {
         setLoading(false);
         return;
       }
@@ -95,13 +95,13 @@ const OrdersPage = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://24-7-b.vercel.app/api/user/getorders`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/order/get`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ firebaseUid: user.firebaseUid }),
+            body: JSON.stringify({ phone: user.phone }),
           }
         );
 
