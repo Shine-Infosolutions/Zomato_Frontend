@@ -312,9 +312,14 @@ const LocationPicker = ({ isOpen, onClose, onLocationSelect }) => {
         <MapAddressSelector
           isOpen={showMapSelector}
           onClose={() => setShowMapSelector(false)}
+          onParentClose={onClose}
           onAddressSelect={(selectedAddress) => {
             setShowMapSelector(false);
+            // Refresh the addresses list after adding new address
+            fetchSavedAddresses();
             onLocationSelect(selectedAddress);
+            // Close the location picker modal
+            onClose();
           }}
         />
       </div>

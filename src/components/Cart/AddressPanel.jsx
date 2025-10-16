@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import AddNewAddress from "./AddNewAddress";
 import { useAppContext } from "../../context/AppContext";
-import AddNewAddressModal from "../AddNewAddressModal";
+import MapAddressSelector from "../MapAddressSelector";
 import LoadingOverlay from "../LoadingOverlay";
 
 const AddressPanel = ({ showPanel, togglePanel, onSelectAddress }) => {
@@ -207,16 +207,15 @@ const AddressPanel = ({ showPanel, togglePanel, onSelectAddress }) => {
           </button>
         </div>
       </div>
-      {/* Add/Edit Address Panel */}
-      {showAddNewAddress && (
-        <AddNewAddressModal
-          showModal={showAddNewAddress}
-          closeModal={() => setShowAddNewAddress(false)}
-          onSubmit={handleAddressSubmit}
-          initialAddress={addressToEdit}
-          isLoading={isAddressLoading}
-        />
-      )}
+      {/* Add Address Panel */}
+      <MapAddressSelector
+        isOpen={showAddNewAddress}
+        onClose={() => setShowAddNewAddress(false)}
+        onAddressSelect={() => {
+          setShowAddNewAddress(false);
+        }}
+        redirectTo="/cart"
+      />
     </>
   );
 };

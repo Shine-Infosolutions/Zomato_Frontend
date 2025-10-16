@@ -4,7 +4,9 @@ import { useAppContext } from '../context/AppContext';
 import MyLocationPointer from './MyLocationPointer';
 import DeliveryTracker from './DeliveryTracker';
 
-const MapAddressSelector = ({ isOpen, onClose, onAddressSelect }) => {
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+const MapAddressSelector = ({ isOpen, onClose, onAddressSelect, onParentClose, redirectTo = '/' }) => {
   // Restaurant location (source) - Fixed location
   const restaurantLocation = { lat: 26.785759952866332, lng: 83.38553180232579 };
   
@@ -35,12 +37,12 @@ const MapAddressSelector = ({ isOpen, onClose, onAddressSelect }) => {
         // Parse and auto-fill address fields
         const parts = data.display_name.split(', ');
         setAddressFields({
-          houseNumber: parts[0] || '',
-          street: parts[1] || '',
-          city: parts[2] || '',
-          state: parts[3] || '',
-          pincode: parts[4] || '',
-          landmark: ''
+          houseNumber: data.address?.house_number || parts[0] || '1',
+          street: data.address?.road || parts[1] || parts[0] || 'Street',
+          city: data.address?.city || data.address?.town || data.address?.village || parts[2] || 'City',
+          state: data.address?.state || parts[3] || 'State',
+          pincode: data.address?.postcode || '000000',
+          landmark: data.address?.attraction || ''
         });
       }
     } catch (error) {
@@ -273,19 +275,71 @@ const MapAddressSelector = ({ isOpen, onClose, onAddressSelect }) => {
 
 
 
-  const handleConfirm = () => {
-    onAddressSelect({
-      lat: selectedLocation.lat,
-      lng: selectedLocation.lng,
-      address: address,
-      name: addressFields.houseNumber || address.split(',')[0] || 'Selected Location',
-      street: addressFields.street,
-      city: addressFields.city,
-      state: addressFields.state,
-      pincode: addressFields.pincode,
-      landmark: addressFields.landmark
-    });
-    onClose();
+  const { user, fetchAddresses, navigate } = useAppContext();
+
+  const handleConfirm = async () => {
+    // Validate required fields
+    if (!addressFields.houseNumber || !addressFields.street || !addressFields.city || !addressFields.pincode) {
+      alert('Please fill in all required fields (House Number, Street, City, Pincode)');
+      return;
+    }
+
+    if (!user?._id) {
+      alert('Please log in to save address');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Save address to database
+      const addressData = {
+        userId: user._id,
+        type: 'Home', // Default type
+        nickname: '',
+        fullAddress: `${addressFields.houseNumber}, ${addressFields.street}, ${addressFields.city}, ${addressFields.state} ${addressFields.pincode}`,
+        house_no: addressFields.houseNumber,
+        street: addressFields.street,
+        landmark: addressFields.landmark,
+        city: addressFields.city,
+        state: addressFields.state,
+        postalCode: addressFields.pincode,
+        lat: selectedLocation.lat,
+        lng: selectedLocation.lng,
+        isDefault: false
+      };
+
+      const response = await fetch(`${API_URL}/api/address/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addressData)
+      });
+
+      const result = await response.json();
+      
+      if (result.message === 'Address saved successfully' || result.success) {
+        // Close modal first
+        onClose();
+        if (onParentClose) onParentClose();
+        
+        // Navigate to cart page
+        if (redirectTo === '/cart') {
+          setTimeout(() => {
+            window.location = '/cart';
+          }, 100);
+        } else {
+          window.location.reload();
+        }
+      } else {
+
+        alert(result.message || 'Failed to save address');
+      }
+    } catch (error) {
+      console.error('Error saving address:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
