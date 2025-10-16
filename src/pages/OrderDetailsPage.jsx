@@ -131,11 +131,11 @@ const OrderDetailsPage = () => {
 
       try {
         const response = await fetch(
-          `https://24-7-b.vercel.app/api/user/order/${orderId}`
+          `${import.meta.env.VITE_API_BASE_URL}/api/order/timeline/${orderId}`
         );
         const data = await response.json();
 
-        if (data.success) {
+        if (data.message === "Order fetched successfully" && data.order) {
           setOrderDetails(data.order);
         } else {
           setError(data.message || "Failed to fetch order details");

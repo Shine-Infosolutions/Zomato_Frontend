@@ -325,18 +325,18 @@ export const AppContextProvider = ({ children }) => {
   const fetchAddresses = async (forceRefresh = false) => {
     setAddressesLoading(true);
     try {
-      if (!user?.phone) {
-        console.log('No user phone available');
+      if (!user?._id) {
+        console.log('No user ID available');
         setAddresses([]);
         setAddressesLoading(false);
         return;
       }
       
-      console.log('Fetching addresses for phone:', user.phone);
+      console.log('Fetching addresses for user ID:', user._id);
       const response = await fetch(`${API_URL}/api/address/get`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: user.phone })
+        body: JSON.stringify({ userId: user._id })
       });
       
       const data = await response.json();
@@ -368,7 +368,7 @@ export const AppContextProvider = ({ children }) => {
         alert("Please fill in all required fields");
         return false;
       }
-      if (!user?.phone) {
+      if (!user?._id) {
         alert("User information is missing. Please log in again.");
         return false;
       }
@@ -377,7 +377,7 @@ export const AppContextProvider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: user.phone,
+          userId: user._id,
           ...addressObj
         })
       });
@@ -399,7 +399,7 @@ export const AppContextProvider = ({ children }) => {
 
   const handleDeleteAddress = async (addressId) => {
     try {
-      if (!user?.phone) {
+      if (!user?._id) {
         alert("User information is missing. Please log in again.");
         return;
       }
@@ -408,7 +408,7 @@ export const AppContextProvider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: user.phone,
+          userId: user._id,
           addressId: addressId
         })
       });

@@ -87,7 +87,7 @@ const OrdersPage = () => {
   useEffect(() => {
     // Fetch real orders from API
     const fetchOrders = async () => {
-      if (!user || !user.phone) {
+      if (!user || !user._id) {
         setLoading(false);
         return;
       }
@@ -101,7 +101,7 @@ const OrdersPage = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ phone: user.phone }),
+            body: JSON.stringify({ customer_id: user._id }),
           }
         );
 

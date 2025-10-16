@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { addAddress, getAddresses, updateAddress, deleteAddress } from '../services/addressApi';
 import { IoMdAdd } from "react-icons/io";
 import { FaHome, FaBriefcase, FaEdit, FaTrash } from "react-icons/fa";
 import AddNewAddressModal from "./AddNewAddressModal";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AddressManager = ({ userId }) => {
   const [addresses, setAddresses] = useState([]);
@@ -32,13 +33,22 @@ const AddressManager = ({ userId }) => {
 
   const fetchAddresses = async () => {
     console.log('Fetching addresses for userId:', userId);
-    const result = await getAddresses(userId);
-    console.log('API result:', result);
-    if (result.success) {
-      console.log('Setting addresses:', result.addresses);
-      setAddresses(result.addresses);
-    } else {
-      console.error('Failed to fetch addresses:', result.message);
+    try {
+      const response = await fetch(`${API_URL}/api/address/get`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const result = await response.json();
+      console.log('API result:', result);
+      if (result.success) {
+        console.log('Setting addresses:', result.addresses);
+        setAddresses(result.addresses);
+      } else {
+        console.error('Failed to fetch addresses:', result.message);
+      }
+    } catch (error) {
+      console.error('Get addresses error:', error);
     }
   };
 
@@ -64,10 +74,25 @@ const AddressManager = ({ userId }) => {
     console.log('Transformed data:', transformedData);
     
     let result;
-    if (editingAddress) {
-      result = await updateAddress({ ...transformedData, addressId: editingAddress._id });
-    } else {
-      result = await addAddress(transformedData);
+    try {
+      if (editingAddress) {
+        const response = await fetch(`${API_URL}/api/address/update`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...transformedData, addressId: editingAddress._id })
+        });
+        result = await response.json();
+      } else {
+        const response = await fetch(`${API_URL}/api/address/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(transformedData)
+        });
+        result = await response.json();
+      }
+    } catch (error) {
+      console.error('Address operation error:', error);
+      result = { success: false, message: 'Network error' };
     }
     
     if (result.message) {
@@ -90,12 +115,22 @@ const AddressManager = ({ userId }) => {
 
   const handleDelete = async (addressId) => {
     if (confirm('Delete this address?')) {
-      const result = await deleteAddress(userId, addressId);
-      if (result.message) {
-        alert(result.message);
-        if (result.message.includes('successfully')) {
-          fetchAddresses();
+      try {
+        const response = await fetch(`${API_URL}/api/address/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, addressId })
+        });
+        const result = await response.json();
+        if (result.message) {
+          alert(result.message);
+          if (result.message.includes('successfully')) {
+            fetchAddresses();
+          }
         }
+      } catch (error) {
+        console.error('Delete address error:', error);
+        alert('Network error');
       }
     }
   };

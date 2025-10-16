@@ -111,7 +111,7 @@ const ProfileUpdate = () => {
 
     try {
       const response = await fetch(
-        "https://24-7-b.vercel.app/api/auth/update",
+        "http://localhost:4000/api/auth/update",
         {
           method: "POST",
           headers: {
