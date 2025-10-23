@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from "react-icons/ai";
-import ZomatoCartPopup from "./ZomatoCartPopup";
-import VariationPage from "../pages/VariationPage";
-import { createPortal } from "react-dom";
 
 const AddToCartButton = ({ item, onFoodClick }) => {
-  const { cart, removeFromCart } = useAppContext();
-  const [showCartPopup, setShowCartPopup] = useState(false);
-  const [showVariationPage, setShowVariationPage] = useState(false);
+  const { cart, removeFromCart, addToCart, navigate } = useAppContext();
 
   // Check if item is valid before proceeding
   if (!item || !item.id) {
@@ -63,21 +58,19 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const handleAddClick = (e) => {
     e.stopPropagation();
-    setShowCartPopup(true);
+    if (item.variation?.length > 0 || item.addon?.length > 0) {
+      navigate(`/item/${item._id}`);
+    } else {
+      addToCart(item);
+    }
   };
 
   const handleQuantityChange = (e) => {
     e.stopPropagation();
-    setShowCartPopup(true);
+    addToCart(item);
   };
 
-  const handleCustomize = (item) => {
-    setShowVariationPage(true);
-  };
 
-  const handleCloseVariationPage = () => {
-    setShowVariationPage(false);
-  };
 
   if (quantity > 0) {
     return (
@@ -87,11 +80,7 @@ const AddToCartButton = ({ item, onFoodClick }) => {
             className={`w-8 h-8 flex items-center justify-center bg-light text-primary`}
             onClick={(e) => {
               e.stopPropagation();
-              if (quantity === 1) {
-                removeFromCart(cartItemId);
-              } else {
-                setShowCartPopup(true);
-              }
+              removeFromCart(cartItemId);
             }}
           >
             {quantity === 1 ? (
@@ -111,22 +100,9 @@ const AddToCartButton = ({ item, onFoodClick }) => {
           </button>
         </div>
 
-        <ZomatoCartPopup
-          item={item}
-          isOpen={showCartPopup}
-          onClose={() => setShowCartPopup(false)}
-          onCustomize={handleCustomize}
-        />
 
-        {showVariationPage && createPortal(
-          <div className="fixed inset-0 z-50 bg-white">
-            <VariationPage
-              food={item}
-              onClose={handleCloseVariationPage}
-            />
-          </div>,
-          document.body
-        )}
+
+
       </>
     );
   }
@@ -140,22 +116,9 @@ const AddToCartButton = ({ item, onFoodClick }) => {
         Add
       </button>
 
-      <ZomatoCartPopup
-        item={item}
-        isOpen={showCartPopup}
-        onClose={() => setShowCartPopup(false)}
-        onCustomize={handleCustomize}
-      />
 
-      {showVariationPage && createPortal(
-        <div className="fixed inset-0 z-50 bg-white">
-          <VariationPage
-            food={item}
-            onClose={handleCloseVariationPage}
-          />
-        </div>,
-        document.body
-      )}
+
+
     </>
   );
 };

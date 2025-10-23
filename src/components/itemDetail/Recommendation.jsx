@@ -295,10 +295,14 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
     return <div className="p-3 bg-white text-red-500">{error}</div>;
   }
 
-  const handleItemClick = (item) => {
-    if (onFoodClick) {
-      onFoodClick(item);
+  const { navigate } = useAppContext();
+
+  const handleItemClick = (item, e) => {
+    // Don't navigate if clicking on the add to cart button
+    if (e.target.closest('.item-actions')) {
+      return;
     }
+    navigate(`/item/${item._id}`);
   };
 
   return (

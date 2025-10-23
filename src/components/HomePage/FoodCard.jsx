@@ -38,9 +38,17 @@ const FoodCard = memo(({ food, onFoodClick }) => {
 
   const itemQuantity = getItemQuantityInCart(food.id);
 
+  const handleItemClick = (e) => {
+    // Don't navigate if clicking on the add to cart button
+    if (e.target.closest('.item-actions')) {
+      return;
+    }
+    navigate(`/item/${food._id}`);
+  };
+
   return (
     <div
-      onClick={() => onFoodClick && onFoodClick(food)}
+      onClick={handleItemClick}
       className="cursor-pointer transition-transform hover:scale-105 w-1/3 px-2 mb-4"
     >
       <div className="rounded-lg shadow-md overflow-hidden">

@@ -21,6 +21,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
 import SavedAddresses from "./pages/Addresses.jsx";
+import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
 
 const OrderConfirmationPage = lazy(() =>
   import("./pages/OrderConfirmationPage.jsx")
@@ -145,6 +146,14 @@ const AppRoutes = () => {
               <Navbar />
               <SavedAddresses />
             </>
+          }
+        />
+        <Route
+          path="/item/:id"
+          element={
+            <ProtectedRoute>
+              <ItemDetailsPage />
+            </ProtectedRoute>
           }
         />
       </Routes>
