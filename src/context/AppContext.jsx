@@ -81,10 +81,25 @@ export const AppContextProvider = ({ children }) => {
   };
 
   // Login function - simplified for new backend
-  const login = async (phoneNumber) => {
+  const login = async (phoneNumber, password = null) => {
     setLoading(true);
     try {
-      // Mock login for now
+      // Bypass login for specific user
+      if (phoneNumber === "soab0419@gmail.com" && password === "pass123") {
+        const userData = { 
+          _id: "68ef87363dc549d4f4226d44",
+          phone: "+91-9876543210", 
+          name: "Test User",
+          email: "soab0419@gmail.com"
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("isLoggedIn", "true");
+        setUser(userData);
+        setCurrentUser(true);
+        return { success: true, message: "Login successful" };
+      }
+      
+      // Regular phone login
       const userData = { phone: phoneNumber, name: "User" };
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isLoggedIn", "true");
@@ -103,6 +118,21 @@ export const AppContextProvider = ({ children }) => {
   const verifyOTP = async (phoneNumber, otpCode) => {
     setLoading(true);
     try {
+      // Bypass for specific user
+      if (phoneNumber === "soab0419@gmail.com") {
+        const userData = { 
+          _id: "68ef87363dc549d4f4226d44",
+          phone: "+91-9876543210", 
+          name: "Test User",
+          email: "soab0419@gmail.com"
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("isLoggedIn", "true");
+        setUser(userData);
+        setCurrentUser(true);
+        return { success: true };
+      }
+      
       // Mock verification
       const userData = { phone: phoneNumber, name: "User" };
       localStorage.setItem("user", JSON.stringify(userData));

@@ -5,7 +5,7 @@ import { useAppContext } from "../context/AppContext";
 
 const LoginForm = ({ onSwitchToRegister, onSwitchToOTP }) => {
   const context = useAppContext();
-  const { setUser, setCurrentUser } = context || {};
+  const { setUser, setCurrentUser, login } = context || {};
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   
@@ -58,60 +58,17 @@ const LoginForm = ({ onSwitchToRegister, onSwitchToOTP }) => {
     }
 
     setLoading(true);
-    console.log('API URL:', import.meta.env.VITE_API_BASE_URL);
-    console.log('Login request:', { email: formData.email, password: formData.password });
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
-      });
+      // Use the bypass login from AppContext
+      const { login } = context;
+      const result = await login(formData.email, formData.password);
       
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Login API response:', data);
-      
-      if (data.message === "OTP sent to your email address") {
-        toast.success("OTP sent to your email!");
-        onSwitchToOTP(formData.email);
-      } else if (data.message === "Login successful" && data.user) {
-        const userData = {
-          _id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          phone: data.user.phone,
-          isVerified: data.user.isVerified
-        };
-        
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("isLoggedIn", "true");
-        
-        if (typeof setUser === 'function') {
-          setUser(userData);
-        }
-        if (typeof setCurrentUser === 'function') {
-          setCurrentUser(true);
-        }
-        
+      if (result.success) {
         toast.success("Login successful!");
-        console.log('User data saved:', userData);
-        
-        // Force page reload to update profile
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
+        navigate("/");
       } else {
-        console.log('Login failed:', data);
-        toast.error(data.message || "Invalid credentials");
+        toast.error(result.message || "Invalid credentials");
       }
     } catch (error) {
       console.error('Login error:', error);
