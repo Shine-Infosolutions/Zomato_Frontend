@@ -1,0 +1,40 @@
+{
+  "hash": "57b0ae83",
+  "configHash": "3fdc6962",
+  "lockfileHash": "45f97a73",
+  "browserHash": "1cb3c82c",
+  "optimized": {
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "dcc850c8",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "86aa8185",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "9e0f1d6f",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/index.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "5223f0e6",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-E7XILPXA": {
+      "file": "chunk-E7XILPXA.js"
+    },
+    "chunk-RGWPGAAI": {
+      "file": "chunk-RGWPGAAI.js"
+    }
+  }
+}
