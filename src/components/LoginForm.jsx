@@ -125,59 +125,117 @@ const LoginForm = ({ onSwitchToRegister, onSwitchToOTP }) => {
 
   return (
     <>
-      <div className="relative mt-5">
-        <div className="text-center absolute top-2 bg-white z-10 px-2">
-          <h1 className="text-center">Login to your account</h1>
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-full mb-4">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
         </div>
-        <hr className="mt-5 relative top-6" />
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+        <p className="text-gray-600 text-sm">Sign in to your account to continue</p>
       </div>
 
-      <form className="mt-12 text-center space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-left text-sm font-medium text-gray-700 mb-1">Email Address</label>
-          <input
-            className="border border-gray-400 w-[250px] py-2.5 px-3 rounded-md focus:outline-none focus:border-red-800"
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Email Field */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-700">Email Address</label>
+          <div className="relative">
+            <input
+              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-200'
+              }`}
+              type="email"
+              name="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+              </svg>
+            </div>
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-xs flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {errors.email}
+            </p>
+          )}
         </div>
 
-        <div>
-          <label className="block text-left text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
-            className="border border-gray-400 w-[250px] py-2.5 px-3 rounded-md focus:outline-none focus:border-red-800"
-            type="password"
-            name="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+        {/* Password Field */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-700">Password</label>
+          <div className="relative">
+            <input
+              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-200'
+              }`}
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          </div>
+          {errors.password && (
+            <p className="text-red-500 text-xs flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {errors.password}
+            </p>
+          )}
         </div>
 
+        {/* Login Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-[250px] py-2.5 mt-4 px-1.5 rounded-md bg-red-800 text-white ${
-            loading ? "opacity-70 cursor-not-allowed" : ""
+          className={`w-full py-3 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transform transition-all duration-200 ${
+            loading ? "opacity-70 cursor-not-allowed scale-95" : "hover:scale-[1.02] active:scale-[0.98]"
           }`}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </div>
+          ) : (
+            "Sign In"
+          )}
         </button>
 
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={onSwitchToRegister}
-            className="text-red-800 text-sm underline"
-          >
-            Don't have an account? Register
-          </button>
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-white text-gray-500">New to Dinner Bell?</span>
+          </div>
         </div>
+
+        {/* Register Link */}
+        <button
+          type="button"
+          onClick={onSwitchToRegister}
+          className="w-full py-3 px-4 rounded-xl font-semibold text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+        >
+          Create New Account
+        </button>
       </form>
     </>
   );

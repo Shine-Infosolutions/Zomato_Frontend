@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { IoMdAdd } from "react-icons/io";
 import { FaHome, FaBriefcase, FaEdit, FaTrash } from "react-icons/fa";
-import AddNewAddressModal from "./AddNewAddressModal";
+import MapAddressSelector from "./MapAddressSelector";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AddressManager = ({ userId }) => {
   const [addresses, setAddresses] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showMapSelector, setShowMapSelector] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [formData, setFormData] = useState({
     type: 'Home',
@@ -163,7 +163,7 @@ const AddressManager = ({ userId }) => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold">Saved Addresses</h1>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => setShowMapSelector(true)}
           className="flex items-center bg-red-800 text-white px-3 py-2 rounded-md"
         >
           <IoMdAdd className="mr-1" /> Add New
@@ -245,16 +245,14 @@ const AddressManager = ({ userId }) => {
         </div>
       )}
 
-      {/* Add/Edit Address Modal */}
-      <AddNewAddressModal
-        showModal={showForm}
-        closeModal={() => {
-          setShowForm(false);
-          setEditingAddress(null);
+      {/* Add Address Modal */}
+      <MapAddressSelector
+        isOpen={showMapSelector}
+        onClose={() => setShowMapSelector(false)}
+        onAddressSelect={() => {
+          setShowMapSelector(false);
+          fetchAddresses();
         }}
-        onSubmit={handleFormSubmit}
-        initialAddress={editingAddress}
-        isLoading={false}
       />
     </div>
   );
