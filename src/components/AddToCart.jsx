@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from "react-icons/ai";
+import BottomSheetModal from "./BottomSheetModal";
+import VariationPage from "../pages/VariationPage";
 
 const AddToCartButton = ({ item, onFoodClick }) => {
   const { cart, removeFromCart, addToCart, navigate } = useAppContext();
+  const [showViewCart, setShowViewCart] = useState(false);
 
   // Check if item is valid before proceeding
   if (!item || !item.id) {
@@ -56,14 +59,26 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const { quantity, cartItemId, hasCustomizations } = getItemDetails();
 
+  const [showVariationModal, setShowVariationModal] = useState(false);
+
   const handleAddClick = (e) => {
     e.stopPropagation();
     if (item.variation?.length > 0 || item.addon?.length > 0) {
-      navigate(`/item/${item._id}`);
+      setShowVariationModal(true);
     } else {
       addToCart(item);
+      setShowViewCart(true);
+      setTimeout(() => setShowViewCart(false), 3000);
     }
   };
+
+  const handleCloseModal = () => {
+    setShowVariationModal(false);
+    setShowViewCart(true);
+    setTimeout(() => setShowViewCart(false), 3000);
+  };
+
+  const totalCartItems = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
 
   const handleQuantityChange = (e) => {
     e.stopPropagation();
@@ -116,9 +131,32 @@ const AddToCartButton = ({ item, onFoodClick }) => {
         Add
       </button>
 
+      {showVariationModal && (
+        <BottomSheetModal
+          open={showVariationModal}
+          onClose={handleCloseModal}
+          height="85vh"
+        >
+          <VariationPage
+            food={item}
+            onClose={handleCloseModal}
+          />
+        </BottomSheetModal>
+      )}
 
-
-
+      {showViewCart && totalCartItems > 0 && (
+        <div className="fixed bottom-4 left-4 right-4 z-50">
+          <button
+            onClick={() => navigate('/cart')}
+            className="w-full bg-red-500 text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between font-medium animate-slideUpFadeIn"
+          >
+            <span>View Cart</span>
+            <span className="bg-white text-red-500 px-2 py-1 rounded-md text-sm">
+              {totalCartItems} item{totalCartItems > 1 ? 's' : ''}
+            </span>
+          </button>
+        </div>
+      )}
     </>
   );
 };

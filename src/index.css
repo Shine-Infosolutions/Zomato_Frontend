@@ -37,6 +37,17 @@
   }
 }
 
+@keyframes locationPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
 @keyframes slideUpFadeIn {
   from {
     opacity: 0;
@@ -141,3 +152,56 @@
    .location-pointer -> animate-[locationPulse_2s_infinite]
    .location-glow -> shadow-[0_0_20px_rgba(59,130,246,0.6)]
 */
+
+/* Bottom Sheet Modal Styles */
+.bottomsheet-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: brightness(1);
+  transition: all 0.3s ease;
+}
+
+.bottomsheet-overlay.active {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: brightness(0.7);
+}
+
+.bottomsheet-sheet {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;
+  max-width: 600px;
+  background: #f3f4f6;
+  border-radius: 1.5rem 1.5rem 0 0;
+  z-index: 50;
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.bottomsheet-sheet.open {
+  transform: translateX(-50%) translateY(0);
+}
+
+.close-btn-animate {
+  opacity: 0;
+  transform: scale(0.8);
+  animation: fadeInScale 0.3s 0s forwards;
+}
+
+@keyframes locationPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
