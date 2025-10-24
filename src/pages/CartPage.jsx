@@ -22,11 +22,12 @@ const CartPage = () => {
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState(null);
-  const cartArray = Object.values(cart);
-  const formattedCart = cartArray.map((item) => ({
+  const cartArray = Object.entries(cart).map(([key, item]) => ({
     ...item,
+    cartKey: key,
     price: typeof item.price === "string" ? item.price : `₹${item.price}`,
   }));
+  const formattedCart = cartArray;
 
   const [instructions, setInstructions] = useState("");
   const [showInstructions, setShowInstructions] = useState(false);
@@ -140,7 +141,7 @@ const CartPage = () => {
           {/* Cart items */}
           {formattedCart.map((item) => (
             <CartItem
-              key={item.id}
+              key={item.cartKey}
               item={item}
               onUpdateQuantity={updateCartItemQuantity}
               onRemoveItem={removeFromCart}
