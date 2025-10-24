@@ -168,26 +168,17 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
 
   // Apply filters and sorting to categories
   useEffect(() => {
-    // Create a deep copy of the original categories
     let newCategories = JSON.parse(JSON.stringify(originalCategories));
 
-    // First apply veg mode filter if enabled
-    if (vegModeEnabled) {
-      newCategories = newCategories.map((category) => {
-        const vegItems = category.items.filter((item) => item.veg === true);
-        return { ...category, items: vegItems };
-      });
-    }
-
-    // Apply quick filter if active
+    // Apply quick filter if active (takes priority over veg mode)
     if (activeQuickFilter) {
       newCategories = newCategories.map((category) => {
         const filteredItems = category.items.filter((item) => {
           switch (activeQuickFilter) {
             case "Veg Only":
-              return item.veg;
+              return item.veg === true || item.veg === 1 || item.veg === "true";
             case "Non-Veg":
-              return !item.veg;
+              return item.veg === false || item.veg === 0 || item.veg === "false" || !item.veg;
             case "Less than ₹200":
               return item.price < 200;
             case "Bestseller":
@@ -198,12 +189,20 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
         });
         return { ...category, items: filteredItems };
       });
+    } else if (vegModeEnabled) {
+      // Only apply veg mode if no quick filter is active
+      newCategories = newCategories.map((category) => {
+        const vegItems = category.items.filter((item) => item.veg === true);
+        return { ...category, items: vegItems };
+      });
     }
 
-    // Apply sorting based on active filter
+
+
+    // Apply sorting
     newCategories = newCategories.map((category) => {
       let sortedItems = [...category.items];
-
+      
       switch (activeFilter) {
         case "Rating":
           sortedItems.sort((a, b) => b.rating - a.rating);
@@ -217,12 +216,8 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
         case "Delivery Time":
           sortedItems.sort((a, b) => a.deliveryTime - b.deliveryTime);
           break;
-        case "All":
-          // No sorting, keep original order
-          break;
         case "Recommended":
         default:
-          // For recommended, prioritize bestsellers and higher ratings
           sortedItems.sort((a, b) => {
             if (a.bestseller && !b.bestseller) return -1;
             if (!a.bestseller && b.bestseller) return 1;
@@ -230,16 +225,19 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
           });
           break;
       }
-
+      
       return { ...category, items: sortedItems };
     });
-
+    
     // Filter out categories with no items
-    newCategories = newCategories.filter(
-      (category) => category.items.length > 0
-    );
-
+    newCategories = newCategories.filter(category => category.items.length > 0);
+    
     setFilteredCategories(newCategories);
+    
+    // Auto-expand first category after filtering
+    if (newCategories.length > 0) {
+      setExpandedAccordion(newCategories[0].name);
+    }
   }, [activeFilter, activeQuickFilter, originalCategories, vegModeEnabled]);
 
   // Effect to handle selected category changes
