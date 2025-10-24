@@ -70,9 +70,6 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const handleCloseModal = () => {
     setActiveModal(null);
-    setShowAddButton(false);
-    setShowViewCart(true);
-    setTimeout(() => setShowViewCart(false), 3000);
   };
 
   const totalCartItems = Object.values(cart).reduce((total, item) => total + item.quantity, 0);

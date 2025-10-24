@@ -10,9 +10,11 @@ const BottomSheetModal = ({ open, onClose, children, height = "80vh" }) => {
 
   useEffect(() => {
     let btnTimeout;
+    let activateTimeout;
+    
     if (open) {
       setShouldRender(true);
-      setTimeout(() => setIsActive(true), 10);
+      activateTimeout = setTimeout(() => setIsActive(true), 50);
       btnTimeout = setTimeout(
         () => setShowCloseButton(true),
         ANIMATION_DURATION
@@ -28,11 +30,13 @@ const BottomSheetModal = ({ open, onClose, children, height = "80vh" }) => {
       return () => {
         clearTimeout(timeout);
         clearTimeout(btnTimeout);
+        clearTimeout(activateTimeout);
         document.body.style.overflow = "";
       };
     }
     return () => {
       clearTimeout(btnTimeout);
+      clearTimeout(activateTimeout);
       document.body.style.overflow = "";
     };
   }, [open]);
@@ -43,28 +47,32 @@ const BottomSheetModal = ({ open, onClose, children, height = "80vh" }) => {
     <>
       {/* Dimmed overlay */}
       <div
-        className={`bottomsheet-overlay ${isActive ? 'active' : ''}`}
+        className={`bottomsheet-overlay${isActive ? ' active' : ''}`}
         onClick={onClose}
-      />{" "}
+      />
       {/* Close button just above the modal */}
       {showCloseButton && (
         <button
           className="fixed left-1/2 z-50 items-center -translate-x-1/2 mb-2 bg-white rounded-full shadow-lg border border-gray-200 w-10 h-10 flex justify-center text-2xl text-gray-500 close-btn-animate"
           style={{ bottom: height }}
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
         >
           &times;
         </button>
       )}
       {/* Sliding bottom sheet */}
       <div
-        className={`bottomsheet-sheet${isActive ? " open" : ""}`}
+        className={`bottomsheet-sheet${isActive ? ' open' : ''}`}
         style={{
           height,
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex-1 overflow-y-auto px-2">{children}</div>
       </div>
