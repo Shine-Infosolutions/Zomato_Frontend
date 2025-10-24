@@ -43,7 +43,10 @@ const FoodCard = memo(({ food, onFoodClick }) => {
     if (e.target.closest('.item-actions')) {
       return;
     }
-    navigate(`/item/${food._id}`);
+    // Open variation modal instead of navigating
+    if (onFoodClick) {
+      onFoodClick(food);
+    }
   };
 
   return (
@@ -102,7 +105,7 @@ const FoodCard = memo(({ food, onFoodClick }) => {
             <span className="mx-1 text-gray-300 text-xs">•</span>
           </div>
           <div className="item-actions">
-            <AddToCartButton item={food} onFoodClick={onFoodClick} />
+            <AddToCartButton item={food} onFoodClick={() => onFoodClick && onFoodClick(food)} />
           </div>
         </div>
       </div>

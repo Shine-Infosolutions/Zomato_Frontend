@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from "react-icons/ai";
+import { FaTrash } from "react-icons/fa";
 import BottomSheetModal from "./BottomSheetModal";
 import VariationPage from "../pages/VariationPage";
 
 const AddToCartButton = ({ item, onFoodClick }) => {
-  const { cart, removeFromCart, addToCart, navigate } = useAppContext();
+  const { cart, removeFromCart, addToCart, navigate, updateCartItemQuantity } = useAppContext();
   const [showViewCart, setShowViewCart] = useState(false);
+  const [showAddButton, setShowAddButton] = useState(false);
 
   // Check if item is valid before proceeding
   if (!item || !item.id) {
@@ -74,6 +76,7 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const handleCloseModal = () => {
     setShowVariationModal(false);
+    setShowAddButton(false);
     setShowViewCart(true);
     setTimeout(() => setShowViewCart(false), 3000);
   };
@@ -90,34 +93,52 @@ const AddToCartButton = ({ item, onFoodClick }) => {
   if (quantity > 0) {
     return (
       <>
-        <div className="flex items-center border w-20 border-primary rounded-md overflow-hidden">
+        {!showAddButton ? (
+          <div className="flex items-center border w-20 border-primary rounded-md overflow-hidden">
+            <button
+              className={`w-8 h-8 flex items-center justify-center bg-light text-primary`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (quantity === 1) {
+                  setShowAddButton(true);
+                } else {
+                  const cartKey = Object.keys(cart).find(key => 
+                    cart[key].id === cartItemId || cart[key]._id === cartItemId || key === cartItemId
+                  );
+                  if (cartKey) {
+                    updateCartItemQuantity(cartKey, cart[cartKey].quantity - 1);
+                  }
+                }
+              }}
+            >
+              {quantity === 1 ? (
+                <FaTrash size={12} />
+              ) : (
+                <AiOutlineMinus size={16} />
+              )}
+            </button>
+            <span className="w-8 h-8 flex items-center justify-center bg-white">
+              {quantity}
+            </span>
+            <button
+              className="w-8 h-8 bg-light text-primary flex items-center justify-center"
+              onClick={handleQuantityChange}
+            >
+              <AiOutlinePlus size={16} />
+            </button>
+          </div>
+        ) : (
           <button
-            className={`w-8 h-8 flex items-center justify-center bg-light text-primary`}
+            className="px-4 py-1 w-20 bg-orange-500 text-white cursor-pointer border border-orange-500 rounded-md transition-all ease-in-out duration-300"
             onClick={(e) => {
               e.stopPropagation();
-              removeFromCart(cartItemId);
+              console.log('Add button clicked - opening modal');
+              setShowVariationModal(true);
             }}
           >
-            {quantity === 1 ? (
-              <AiOutlineDelete size={16} />
-            ) : (
-              <AiOutlineMinus size={16} />
-            )}
+            Add
           </button>
-          <span className="w-8 h-8 flex items-center justify-center bg-white">
-            {quantity}
-          </span>
-          <button
-            className="w-8 h-8 bg-light text-primary flex items-center justify-center"
-            onClick={handleQuantityChange}
-          >
-            <AiOutlinePlus size={16} />
-          </button>
-        </div>
-
-
-
-
+        )}
       </>
     );
   }

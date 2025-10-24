@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 // import CartPage from "./CartPage";
 import { VscDiffModified } from "react-icons/vsc";
 
 const CartItem = ({ item, onUpdateQuantity, onRemoveItem, onAddMore }) => {
+  const [showAddButton, setShowAddButton] = useState(false);
   // Calculate item total price
   let itemPrice = 0;
   try {
@@ -43,11 +44,16 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem, onAddMore }) => {
           <div className="flex items-center">
             <button
               className="cursor-pointer w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l-md bg-gray-50 text-gray-600 hover:bg-gray-100"
-              onClick={() =>
-                item.quantity <= 1
-                  ? onRemoveItem(item.id)
-                  : onUpdateQuantity(item.id, item.quantity - 1)
-              }
+              onClick={() => {
+                console.log('Minus clicked:', item.cartKey || item.id, 'quantity:', item.quantity);
+                if (item.quantity <= 1) {
+                  console.log('Removing item');
+                  onRemoveItem(item.cartKey || item.id);
+                } else {
+                  console.log('Decreasing quantity to:', item.quantity - 1);
+                  onUpdateQuantity(item.cartKey || item.id, item.quantity - 1);
+                }
+              }}
             >
               {item.quantity <= 1 ? (
                 <FaTrash size={12} />
@@ -60,7 +66,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem, onAddMore }) => {
             </span>
             <button
               className=" cursor-pointer w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r-md bg-gray-50 text-gray-600 hover:bg-gray-100"
-              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+              onClick={() => onUpdateQuantity(item.cartKey || item.id, item.quantity + 1)}
             >
               <FaPlus size={12} />
             </button>
@@ -69,12 +75,41 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem, onAddMore }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        <button
-          className="text-red-500 text-sm flex items-center cursor-pointer"
-          onClick={() => onRemoveItem(item.id)}
-        >
-          <FaTrash size={10} className="mr-1" /> Remove
-        </button>
+        {!showAddButton ? (
+          <button
+            className="text-red-500 text-sm flex items-center cursor-pointer"
+            onClick={() => setShowAddButton(true)}
+          >
+            <FaTrash size={10} className="mr-1" /> Remove
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-orange-500 text-white px-3 py-1 rounded text-sm flex items-center cursor-pointer hover:bg-orange-600"
+              onClick={() => {
+                onUpdateQuantity(item.cartKey || item.id, item.quantity + 1);
+                setShowAddButton(false);
+              }}
+            >
+              <FaPlus size={10} className="mr-1" /> Add
+            </button>
+            <button
+              className="text-gray-500 text-sm cursor-pointer hover:text-gray-700"
+              onClick={() => setShowAddButton(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="text-red-500 text-sm cursor-pointer hover:text-red-700"
+              onClick={() => {
+                console.log('Delete clicked:', item.cartKey || item.id);
+                onRemoveItem(item.cartKey || item.id);
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
