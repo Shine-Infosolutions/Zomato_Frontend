@@ -76,7 +76,16 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const handleQuantityChange = (e) => {
     e.stopPropagation();
-    addToCart(item);
+    // For items already in cart, directly update quantity
+    const cartKey = Object.keys(cart).find(key => 
+      cart[key].id === cartItemId || cart[key]._id === cartItemId || key === cartItemId
+    );
+    if (cartKey) {
+      updateCartItemQuantity(cartKey, cart[cartKey].quantity + 1);
+    } else {
+      // If not in cart, add it
+      addToCart(item);
+    }
   };
 
 
@@ -90,13 +99,13 @@ const AddToCartButton = ({ item, onFoodClick }) => {
               className={`w-8 h-8 flex items-center justify-center bg-light text-primary`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (quantity === 1) {
-                  setShowAddButton(true);
-                } else {
-                  const cartKey = Object.keys(cart).find(key => 
-                    cart[key].id === cartItemId || cart[key]._id === cartItemId || key === cartItemId
-                  );
-                  if (cartKey) {
+                const cartKey = Object.keys(cart).find(key => 
+                  cart[key].id === cartItemId || cart[key]._id === cartItemId || key === cartItemId
+                );
+                if (cartKey) {
+                  if (quantity === 1) {
+                    removeFromCart(cartKey);
+                  } else {
                     updateCartItemQuantity(cartKey, cart[cartKey].quantity - 1);
                   }
                 }
