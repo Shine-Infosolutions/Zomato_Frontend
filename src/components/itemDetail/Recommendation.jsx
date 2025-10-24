@@ -37,6 +37,7 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
     removeFromCart,
     updateCartItemQuantity,
     vegModeEnabled,
+    navigate,
   } = useAppContext();
 
   const getItemQuantityInCart = (itemId) => {
@@ -294,8 +295,6 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
   if (error) {
     return <div className="p-3 bg-white text-red-500">{error}</div>;
   }
-
-  const { navigate } = useAppContext();
 
   const handleItemClick = (item, e) => {
     // Don't navigate if clicking on the add to cart button

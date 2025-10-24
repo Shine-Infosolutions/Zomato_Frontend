@@ -43,6 +43,7 @@ export const AppContextProvider = ({ children }) => {
     }
   });
   const [showCartNotification, setShowCartNotification] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
 
   // Use refs to prevent infinite loops
   const isInitialMount = useRef(true);
@@ -611,6 +612,8 @@ export const AppContextProvider = ({ children }) => {
     handleDeleteAddress,
     addressesLoading,
     placeOrder,
+    activeModal,
+    setActiveModal,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

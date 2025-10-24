@@ -6,9 +6,11 @@ import BottomSheetModal from "./BottomSheetModal";
 import VariationPage from "../pages/VariationPage";
 
 const AddToCartButton = ({ item, onFoodClick }) => {
-  const { cart, removeFromCart, addToCart, navigate, updateCartItemQuantity } = useAppContext();
+  const { cart, removeFromCart, addToCart, navigate, updateCartItemQuantity, activeModal, setActiveModal } = useAppContext();
   const [showViewCart, setShowViewCart] = useState(false);
   const [showAddButton, setShowAddButton] = useState(false);
+
+  const isModalOpen = activeModal === item.id;
 
   // Check if item is valid before proceeding
   if (!item || !item.id) {
@@ -61,21 +63,13 @@ const AddToCartButton = ({ item, onFoodClick }) => {
 
   const { quantity, cartItemId, hasCustomizations } = getItemDetails();
 
-  const [showVariationModal, setShowVariationModal] = useState(false);
-
   const handleAddClick = (e) => {
     e.stopPropagation();
-    if (item.variation?.length > 0 || item.addon?.length > 0) {
-      setShowVariationModal(true);
-    } else {
-      addToCart(item);
-      setShowViewCart(true);
-      setTimeout(() => setShowViewCart(false), 3000);
-    }
+    setActiveModal(item.id);
   };
 
   const handleCloseModal = () => {
-    setShowVariationModal(false);
+    setActiveModal(null);
     setShowAddButton(false);
     setShowViewCart(true);
     setTimeout(() => setShowViewCart(false), 3000);
@@ -132,8 +126,7 @@ const AddToCartButton = ({ item, onFoodClick }) => {
             className="px-4 py-1 w-20 bg-orange-500 text-white cursor-pointer border border-orange-500 rounded-md transition-all ease-in-out duration-300"
             onClick={(e) => {
               e.stopPropagation();
-              console.log('Add button clicked - opening modal');
-              setShowVariationModal(true);
+              setActiveModal(item.id);
             }}
           >
             Add
@@ -146,15 +139,15 @@ const AddToCartButton = ({ item, onFoodClick }) => {
   return (
     <>
       <button
-        className="px-4 py-1 w-20 bg-light text-primary cursor-pointer border border-red-800 rounded-md transition-all ease-in-out duration-300"
+        className="px-4 py-1 w-20 bg-light text-primary cursor-pointer border border-primary rounded-md transition-all ease-in-out duration-300"
         onClick={handleAddClick}
       >
         Add
       </button>
 
-      {showVariationModal && (
+      {isModalOpen && (
         <BottomSheetModal
-          open={showVariationModal}
+          open={isModalOpen}
           onClose={handleCloseModal}
           height="85vh"
         >
