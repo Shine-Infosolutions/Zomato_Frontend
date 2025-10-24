@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../services/api";
+import { io } from "socket.io-client";
 
 export const AppContext = createContext();
 const ADDRESSES_CACHE_KEY = "userAddresses";
@@ -44,6 +45,7 @@ export const AppContextProvider = ({ children }) => {
   });
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   // Use refs to prevent infinite loops
   const isInitialMount = useRef(true);
@@ -66,6 +68,27 @@ export const AppContextProvider = ({ children }) => {
       }
     }
   }, []);
+
+  // Initialize WebSocket when user logs in
+  useEffect(() => {
+    if (user && user._id) {
+      const socketConnection = io(API_URL);
+      setSocket(socketConnection);
+      
+      // Join user room for order updates
+      socketConnection.emit('join-user', user._id);
+      
+      // Listen for order status updates
+      socketConnection.on('order-status-updated', (updatedOrder) => {
+        console.log('Order status updated:', updatedOrder);
+        // You can add toast notifications or update order state here
+      });
+      
+      return () => {
+        socketConnection.disconnect();
+      };
+    }
+  }, [user]);
 
   // Save cart to localStorage whenever cart changes
   useEffect(() => {
