@@ -14,7 +14,7 @@ import LocationPicker from "../LocationPicker";
 
 const Header = ({ selectedAddress, onSearchSelect }) => {
   const [toggle, setToggle] = useState(false);
-  const { logout, user, navigate, vegModeEnabled, toggleVegMode } = useAppContext();
+  const { logout, user, navigate, vegModeEnabled, toggleVegMode, addresses } = useAppContext();
   const [showMenu, setShowMenu] = useState(false);
   const [showMapSelector, setShowMapSelector] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,43 +22,6 @@ const Header = ({ selectedAddress, onSearchSelect }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
-  const [addresses, setAddresses] = useState([]);
-  
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
-  const userId = user?._id;
-
-  const fetchAddresses = async () => {
-    console.log('Fetching addresses for userId:', userId);
-    console.log('User object:', user);
-    if (!userId) {
-      console.log('No userId available');
-      return;
-    }
-    try {
-      const response = await fetch(`${API_URL}/api/address/get`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      });
-      const result = await response.json();
-      console.log('API result:', result);
-      if (result.success) {
-        console.log('Setting addresses:', result.addresses);
-        console.log('Rendering addresses:', result.addresses);
-        setAddresses(result.addresses);
-      } else {
-        console.error('Failed to fetch addresses:', result.message);
-      }
-    } catch (error) {
-      console.error('Get addresses error:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchAddresses();
-    }
-  }, [userId]);
 
   const handleProfileClick = () => {
     navigate("/profile");

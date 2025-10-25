@@ -81,27 +81,18 @@ export const AppContextProvider = ({ children }) => {
     return `${base}-${variationPart}`;
   };
 
-  // Login function - simplified for new backend
+  // Login function - always login as specific user
   const login = async (phoneNumber, password = null) => {
     setLoading(true);
     try {
-      // Bypass login for specific user
-      if (phoneNumber === "soab0419@gmail.com" && password === "pass123") {
-        const userData = { 
-          _id: "68ef87363dc549d4f4226d44",
-          phone: "+91-9876543210", 
-          name: "Test User",
-          email: "soab0419@gmail.com"
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("isLoggedIn", "true");
-        setUser(userData);
-        setCurrentUser(true);
-        return { success: true, message: "Login successful" };
-      }
-      
-      // Regular phone login
-      const userData = { phone: phoneNumber, name: "User" };
+      // Always login as the specific user regardless of credentials
+      const userData = { 
+        _id: "68ef87363dc549d4f4226d44",
+        phone: 1234567890, 
+        name: "asa",
+        email: "soab0419@gmail.com",
+        isVerified: true
+      };
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isLoggedIn", "true");
       setUser(userData);
@@ -115,27 +106,18 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // Verify OTP function - simplified
+  // Verify OTP function - always login as specific user
   const verifyOTP = async (phoneNumber, otpCode) => {
     setLoading(true);
     try {
-      // Bypass for specific user
-      if (phoneNumber === "soab0419@gmail.com") {
-        const userData = { 
-          _id: "68ef87363dc549d4f4226d44",
-          phone: "+91-9876543210", 
-          name: "Test User",
-          email: "soab0419@gmail.com"
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("isLoggedIn", "true");
-        setUser(userData);
-        setCurrentUser(true);
-        return { success: true };
-      }
-      
-      // Mock verification
-      const userData = { phone: phoneNumber, name: "User" };
+      // Always login as the specific user regardless of phone/OTP
+      const userData = { 
+        _id: "68ef87363dc549d4f4226d44",
+        phone: 1234567890, 
+        name: "asa",
+        email: "soab0419@gmail.com",
+        isVerified: true
+      };
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isLoggedIn", "true");
       setUser(userData);
@@ -352,6 +334,30 @@ export const AppContextProvider = ({ children }) => {
     localStorage.getItem(SELECTED_ADDRESS_KEY) || null
   );
   const [addressesLoading, setAddressesLoading] = useState(false);
+  
+  // Shared categories and items state with cache initialization
+  const [categories, setCategories] = useState(() => {
+    try {
+      const cached = localStorage.getItem('categories_cache');
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < 3600000) return data;
+      }
+    } catch (e) {}
+    return [];
+  });
+  const [items, setItems] = useState(() => {
+    try {
+      const cached = localStorage.getItem('items_cache');
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < 3600000) return data;
+      }
+    } catch (e) {}
+    return [];
+  });
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [itemsLoading, setItemsLoading] = useState(false);
 
   const fetchAddresses = async (forceRefresh = false) => {
     setAddressesLoading(true);
@@ -466,6 +472,81 @@ export const AppContextProvider = ({ children }) => {
       localStorage.setItem(SELECTED_ADDRESS_KEY, selectedAddressId);
     }
   }, [selectedAddressId]);
+
+  // Fetch categories with caching
+  const fetchCategories = async () => {
+    if (categories.length > 0) return;
+    
+    // Load from cache first
+    const cached = localStorage.getItem('categories_cache');
+    if (cached) {
+      try {
+        const { data, timestamp } = JSON.parse(cached);
+        // Cache valid for 1 hour
+        if (Date.now() - timestamp < 3600000) {
+          setCategories(data);
+          return;
+        }
+      } catch (e) {}
+    }
+    
+    setCategoriesLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/category/get`);
+      const data = await response.json();
+      if (data.success && data.categories) {
+        setCategories(data.categories);
+        // Cache the data
+        localStorage.setItem('categories_cache', JSON.stringify({
+          data: data.categories,
+          timestamp: Date.now()
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+    setCategoriesLoading(false);
+  };
+
+  // Fetch items with caching
+  const fetchItems = async () => {
+    if (items.length > 0) return;
+    
+    // Load from cache first
+    const cached = localStorage.getItem('items_cache');
+    if (cached) {
+      try {
+        const { data, timestamp } = JSON.parse(cached);
+        // Cache valid for 1 hour
+        if (Date.now() - timestamp < 3600000) {
+          setItems(data);
+          return;
+        }
+      } catch (e) {}
+    }
+    
+    setItemsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/item/get`);
+      const data = await response.json();
+      const itemsData = Array.isArray(data) ? data : (data.itemsdata || data.items || data.data || []);
+      setItems(itemsData);
+      // Cache the data
+      localStorage.setItem('items_cache', JSON.stringify({
+        data: itemsData,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+    setItemsLoading(false);
+  };
+
+  // Fetch data on app load
+  useEffect(() => {
+    fetchCategories();
+    fetchItems();
+  }, []);
 
   // Fetch addresses on user change
   useEffect(() => {
@@ -592,6 +673,7 @@ export const AppContextProvider = ({ children }) => {
     verifyOTP,
     logout,
     user,
+    setUser,
     loading,
     clearCart,
     addToCartWithQuantity,
@@ -614,6 +696,20 @@ export const AppContextProvider = ({ children }) => {
     placeOrder,
     activeModal,
     setActiveModal,
+    categories,
+    items,
+    categoriesLoading,
+    itemsLoading,
+    fetchCategories,
+    fetchItems,
+    clearCache: () => {
+      localStorage.removeItem('categories_cache');
+      localStorage.removeItem('items_cache');
+      setCategories([]);
+      setItems([]);
+      fetchCategories();
+      fetchItems();
+    },
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

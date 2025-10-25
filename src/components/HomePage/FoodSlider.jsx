@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useAppContext } from "../../context/AppContext";
 
 const FoodSlider = ({ onCategoryClick }) => {
   // const defaultCategories = [
@@ -14,36 +15,7 @@ const FoodSlider = ({ onCategoryClick }) => {
   //   { id: 10, name: "Chinese", image: "🥡" },
   // ];
 
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/category/get`
-        );
-        const data = await response.json();
-        
-        console.log('Categories API response:', data);
-        
-        // Handle both array and object responses
-        if (data.success && data.categories) {
-          setCategories(data.categories);
-        } else {
-          const categories = Array.isArray(data) ? data : [];
-          setCategories(categories);
-        }
-      } catch (error) {
-        // console.error("Error fetching categories:", error);
-        // setCategories(defaultCategories);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const { categories, categoriesLoading } = useAppContext();
 
   const handleCategoryClick = (category) => {
     if (onCategoryClick) {
@@ -65,7 +37,7 @@ const FoodSlider = ({ onCategoryClick }) => {
     <div className="mt-8 px-4">
       <h2 className="text-xl font-bold mb-4">What's on your mind?</h2>
       <div className="overflow-x-auto pb-4">
-        {loading ? (
+        {categoriesLoading ? (
           <div className="flex space-x-6 min-w-max">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="flex flex-col items-center">

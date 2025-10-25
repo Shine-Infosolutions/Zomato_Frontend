@@ -53,16 +53,13 @@ const LoginForm = ({ onSwitchToRegister, onSwitchToOTP }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
-
+    // Skip validation for bypass login
     setLoading(true);
     
     try {
       // Use the bypass login from AppContext
       const { login } = context;
-      const result = await login(formData.email, formData.password);
+      const result = await login(formData.email || "bypass", formData.password || "bypass");
       
       if (result.success) {
         toast.success("Login successful!");
