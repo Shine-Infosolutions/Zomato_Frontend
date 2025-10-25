@@ -60,6 +60,14 @@ export const fetchFoodItems = async () => {
     return formattedData;
   } catch (error) {
     console.error("Error fetching food items:", error);
+    
+    // Handle specific Mongoose schema error
+    if (error.message && error.message.includes('Schema hasn\'t been registered')) {
+      console.error('Backend Mongoose Error: Item model schema not registered');
+      // Return empty array or fallback data
+      return [];
+    }
+    
     return [];
   }
 };

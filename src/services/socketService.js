@@ -10,7 +10,10 @@ class SocketService {
     if (this.socket) return;
 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://24-7-b.vercel.app';
-    this.socket = io(API_BASE_URL);
+    this.socket = io(API_BASE_URL, {
+      transports: ['polling'],
+      upgrade: false
+    });
 
     this.socket.on('connect', () => {
       console.log('Connected to server');
