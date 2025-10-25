@@ -243,11 +243,18 @@ const CartPage = () => {
           ) : null}
 
           <button
-            className="cursor-pointer w-full bg-green-700 text-white py-3 rounded-lg font-bold mt-2 hover:bg-green-800"
-            onClick={() => setShowAddressPanel(true)}
+            className="cursor-pointer w-full bg-green-700 text-white py-3 rounded-lg font-bold mt-2 hover:bg-green-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            onClick={selectedAddress ? handlePlaceOrder : () => setShowAddressPanel(true)}
+            disabled={isPlacingOrder}
           >
-            {selectedAddress ? 'Place Order' : 'Select Address to Continue'}
+            {isPlacingOrder ? 'Placing Order...' : (selectedAddress ? 'Place Order' : 'Select Address to Continue')}
           </button>
+          
+          {orderError && (
+            <div className="mt-2 p-2 bg-red-100 text-red-700 text-sm rounded">
+              {orderError}
+            </div>
+          )}
         </div>
       )}
     </div>

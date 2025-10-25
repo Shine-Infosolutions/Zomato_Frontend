@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../services/api";
+import socketService from "../services/socketService";
 
 export const AppContext = createContext();
 const ADDRESSES_CACHE_KEY = "userAddresses";
@@ -65,6 +66,14 @@ export const AppContextProvider = ({ children }) => {
         localStorage.removeItem("user");
       }
     }
+
+    // Connect to WebSocket
+    socketService.connect();
+
+    // Cleanup on unmount
+    return () => {
+      socketService.disconnect();
+    };
   }, []);
 
   // Save cart to localStorage whenever cart changes
@@ -550,6 +559,14 @@ export const AppContextProvider = ({ children }) => {
       const result = await response.json();
 
       if (result.success || result.message === "Order placed") {
+        // Emit order placed event via WebSocket
+        socketService.emitOrderPlaced({
+          orderId: result.order?._id || result.orderId || result._id,
+          customerName: user.name || 'Customer',
+          amount: finalTotal,
+          items: cartItems.map(item => ({ name: item.name, quantity: item.quantity }))
+        });
+
         // Clear cart on successful order
         setCart({});
         navigate(`/order-confirmation/${result.orderId || result._id}`);
