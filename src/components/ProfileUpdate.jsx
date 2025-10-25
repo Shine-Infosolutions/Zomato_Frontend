@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
-import { fetchCategoryData, getUserWishlist, getUserAddresses, getUserData } from "../services/api";
 
 // Helper function to generate avatar color (can be moved to a utils file)
 const getColorForLetter = (letter) => {
@@ -44,11 +43,12 @@ const ProfileUpdate = () => {
 
   const fetchProfileData = async () => {
     try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const [userRes, categoryRes, wishlistRes, addressRes] = await Promise.all([
-        getUserData(),
-        fetchCategoryData(),
-        getUserWishlist(),
-        getUserAddresses()
+        fetch(`${baseUrl}/api/auth/user`).then(res => res.json()),
+        fetch(`${baseUrl}/api/categories`).then(res => res.json()),
+        fetch(`${baseUrl}/api/wishlist`).then(res => res.json()),
+        fetch(`${baseUrl}/api/addresses`).then(res => res.json())
       ]);
 
       // Update user data if API call successful

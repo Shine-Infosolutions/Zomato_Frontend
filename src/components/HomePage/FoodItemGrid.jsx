@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import FoodCard from "./FoodCard";
-import { fetchFoodItems } from "../../services/api";
 import { useAppContext } from "../../context/AppContext";
 
 // Skeleton card

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaFilter, FaChevronDown, FaChevronUp, FaStar } from "react-icons/fa";
 import { BiSolidLeaf } from "react-icons/bi";
-import { fetchFoodItems } from "../../services/api";
 import { useAppContext } from "../../context/AppContext";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import AddToCartButton from "../AddToCart";

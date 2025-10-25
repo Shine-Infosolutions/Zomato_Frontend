@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserProfile } from "../services/api";
+
 
 export const AppContext = createContext();
 const ADDRESSES_CACHE_KEY = "userAddresses";
@@ -171,21 +171,10 @@ export const AppContextProvider = ({ children }) => {
     if (profileRefreshed && !forceRefresh) return;
 
     try {
-      const data = await fetchUserProfile(forceRefresh);
-      if (data.success && data.user) {
-        console.log("User profile fetched successfully:", data.user);
-        setUser(data.user);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...JSON.parse(localStorage.getItem("user") || "{}"),
-            ...data.user,
-          })
-        );
-        localStorage.setItem("userProfile", JSON.stringify(data.user));
+      // Since we're using bypass login, just use the current user data
+      if (user) {
+        localStorage.setItem("userProfile", JSON.stringify(user));
         setProfileRefreshed(true);
-      } else {
-        console.warn("Failed to fetch user profile:", data.error);
       }
     } catch (e) {
       console.error("Error in refreshUserProfile:", e);

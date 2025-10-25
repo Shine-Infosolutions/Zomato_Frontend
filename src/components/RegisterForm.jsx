@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
-import { registerUser } from "../services/api";
 
 const RegisterForm = ({ onSwitchToLogin, onSwitchToOTP }) => {
   const [loading, setLoading] = useState(false);
@@ -70,7 +69,15 @@ const RegisterForm = ({ onSwitchToLogin, onSwitchToOTP }) => {
     setLoading(true);
     
     try {
-      const result = await registerUser(formData);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const result = await response.json();
       
       if (result.success) {
         toast.success("Registration successful!");
