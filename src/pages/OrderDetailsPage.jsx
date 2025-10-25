@@ -29,10 +29,14 @@ const OrderDetailsPage = () => {
       case 2:
         return "preparing";
       case 3:
-        return "delivering";
+        return "preparing";
       case 4:
-        return "delivered";
+        return "preparing";
       case 5:
+        return "delivering";
+      case 6:
+        return "delivered";
+      case 7:
         return "cancelled";
       default:
         return "pending";
@@ -107,19 +111,27 @@ const OrderDetailsPage = () => {
     }
   }, [orderDetails]);
 
-  // For demo purposes, advance the status every few seconds
+  // Poll for order updates every 30 seconds
   useEffect(() => {
-    const statusSequence = ["pending", "preparing", "delivering", "delivered"];
-    const currentIndex = statusSequence.indexOf(orderStatus);
-
-    if (currentIndex < statusSequence.length - 1) {
-      const timer = setTimeout(() => {
-        setOrderStatus(statusSequence[currentIndex + 1]);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [orderStatus]);
+    if (!orderId) return;
+    
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/order/timeline/${orderId}`
+        );
+        const data = await response.json();
+        
+        if (data.message === "Order fetched successfully" && data.order) {
+          setOrderDetails(data.order);
+        }
+      } catch (err) {
+        console.error("Error polling order updates:", err);
+      }
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [orderId]);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -153,15 +165,21 @@ const OrderDetailsPage = () => {
 
   // Calculate progress percentage based on status
   const getProgressPercentage = () => {
-    switch (orderStatus) {
-      case "pending":
-        return 0;
-      case "preparing":
-        return 33;
-      case "delivering":
-        return 66;
-      case "delivered":
+    if (!orderDetails) return 0;
+    
+    switch (orderDetails.order_status) {
+      case 1:
+        return 25;
+      case 2:
+      case 3:
+      case 4:
+        return 50;
+      case 5:
+        return 75;
+      case 6:
         return 100;
+      case 7:
+        return 0;
       default:
         return 0;
     }
@@ -355,7 +373,7 @@ const OrderDetailsPage = () => {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
                 ${
-                  orderStatus !== "pending"
+                  orderDetails.order_status >= 1
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
@@ -366,7 +384,7 @@ const OrderDetailsPage = () => {
                 <IoTimeOutline
                   size={24}
                   className={`${
-                    orderStatus === "pending"
+                    orderDetails.order_status === 1
                       ? "text-green-500 ticking-animation"
                       : "text-gray-400"
                   }`}
@@ -380,39 +398,38 @@ const OrderDetailsPage = () => {
                 <GiCookingPot
                   size={24}
                   className={`${
-                    orderStatus === "preparing"
-                      ? "text-green-500 cooking-animation"
-                      : orderStatus === "delivering" ||
-                        orderStatus === "delivered"
+                    orderDetails.order_status >= 2
                       ? "text-green-500"
                       : "text-gray-400"
+                  } ${
+                    orderDetails.order_status >= 2 && orderDetails.order_status <= 4
+                      ? "cooking-animation"
+                      : ""
                   }`}
                 />
               </div>
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
                 ${
-                  orderStatus === "preparing" ||
-                  orderStatus === "delivering" ||
-                  orderStatus === "delivered"
+                  orderDetails.order_status >= 2
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
               >
-                {orderStatus === "preparing" ||
-                orderStatus === "delivering" ||
-                orderStatus === "delivered" ? (
+                {orderDetails.order_status >= 2 ? (
                   <FaCheck size={12} />
                 ) : (
                   <span className="text-xs">2</span>
                 )}
               </div>
               <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Preparing</p>
+                <p className="text-xs font-medium">
+                  {orderDetails.order_status >= 4 ? "Prepared" : "Preparing"}
+                </p>
                 <p className="text-xs text-gray-500">
-                  {orderStatus === "pending"
-                    ? "--:--"
-                    : formatTime(orderDetails.updatedAt)}
+                  {orderDetails.order_status >= 2
+                    ? formatTime(orderDetails.status_timestamps?.prepared || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)
+                    : "--:--"}
                 </p>
               </div>
             </div>
@@ -422,20 +439,20 @@ const OrderDetailsPage = () => {
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivering</p>
                 <p className="text-xs text-gray-500">
-                  {orderStatus === "pending" || orderStatus === "preparing"
-                    ? "--:--"
-                    : formatTime(orderDetails.updatedAt)}
+                  {orderDetails.order_status >= 5
+                    ? formatTime(orderDetails.status_timestamps?.out_for_delivery || orderDetails.updatedAt)
+                    : "--:--"}
                 </p>
               </div>
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
                 ${
-                  orderStatus === "delivering" || orderStatus === "delivered"
+                  orderDetails.order_status >= 5
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
               >
-                {orderStatus === "delivering" || orderStatus === "delivered" ? (
+                {orderDetails.order_status >= 5 ? (
                   <FaCheck size={12} />
                 ) : (
                   <span className="text-xs">3</span>
@@ -445,9 +462,9 @@ const OrderDetailsPage = () => {
                 <FaMotorcycle
                   size={24}
                   className={`${
-                    orderStatus === "delivering"
+                    orderDetails.order_status === 5
                       ? "text-green-500 animate-bounce"
-                      : orderStatus === "delivered"
+                      : orderDetails.order_status >= 6
                       ? "text-green-500"
                       : "text-gray-400"
                   }`}
@@ -461,7 +478,7 @@ const OrderDetailsPage = () => {
                 <BsBuildingCheck
                   size={24}
                   className={`${
-                    orderStatus === "delivered"
+                    orderDetails.order_status === 6
                       ? "text-green-500"
                       : "text-gray-400"
                   }`}
@@ -470,12 +487,12 @@ const OrderDetailsPage = () => {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
                 ${
-                  orderStatus === "delivered"
+                  orderDetails.order_status === 6
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
               >
-                {orderStatus === "delivered" ? (
+                {orderDetails.order_status === 6 ? (
                   <FaCheck size={12} />
                 ) : (
                   <span className="text-xs">4</span>
@@ -484,8 +501,8 @@ const OrderDetailsPage = () => {
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivered</p>
                 <p className="text-xs text-gray-500">
-                  {orderStatus === "delivered"
-                    ? formatTime(orderDetails.updatedAt)
+                  {orderDetails.order_status === 6
+                    ? formatTime(orderDetails.status_timestamps?.delivered || orderDetails.updatedAt)
                     : "--:--"}
                 </p>
               </div>

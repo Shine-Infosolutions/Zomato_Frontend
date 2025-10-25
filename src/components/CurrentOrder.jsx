@@ -7,51 +7,38 @@ const CurrentOrder = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Use dummy order data instead of API call
-    const dummyOrder = {
-      _id: "6824734335f21df44dd78619",
-      orderId: "BUD1001",
-      order_status: 4,
-      items: [
-        { name: "Butter Chicken", quantity: 1 },
-        { name: "Garlic Naan", quantity: 2 },
-      ],
-      amount: 450,
-      created_at: new Date().toISOString(),
-      estimated_delivery: new Date(Date.now() + 25 * 60000).toISOString(), // 25 mins from now
+    // Fetch current order data
+    const fetchCurrentOrder = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user?.phone) return;
+
+        const response = await fetch(`https://24-7-b.vercel.app/api/order/current`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: user.phone })
+        });
+
+        const data = await response.json();
+        if (data.success && data.order) {
+          setCurrentOrder(data.order);
+        } else {
+          setCurrentOrder(null);
+        }
+      } catch (error) {
+        console.error('Error fetching current order:', error);
+        setCurrentOrder(null);
+      }
     };
 
-    setCurrentOrder(dummyOrder);
+    fetchCurrentOrder();
+
+    // Poll for updates every 30 seconds
+    const interval = setInterval(fetchCurrentOrder, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  // useEffect(() => {
-  //   // Fetch current order data
-  //   const fetchCurrentOrder = async () => {
-  //     try {
-  //       const userId = JSON.parse(localStorage.getItem('user'))?.uid;
-  //       if (!userId) return;
 
-  //       const response = await fetch(`https://24-7-b.vercel.app/api/user/currentorder`, {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({ firebaseUid: userId })
-  //       });
-
-  //       const data = await response.json();
-  //       if (data.success && data.order) {
-  //         setCurrentOrder(data.order);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching current order:', error);
-  //     }
-  //   };
-
-  //   fetchCurrentOrder();
-
-  //   // Poll for updates every 30 seconds
-  //   const interval = setInterval(fetchCurrentOrder, 30000);
-  //   return () => clearInterval(interval);
-  // }, []);
 
   if (!currentOrder) return null;
 
@@ -59,10 +46,12 @@ const CurrentOrder = () => {
   const getStatusText = (status) => {
     const statusMap = {
       1: "Order Received",
-      2: "Preparing",
-      3: "Ready for Pickup",
-      4: "Out for Delivery",
-      5: "Delivered",
+      2: "Accepted",
+      3: "Preparing",
+      4: "Prepared",
+      5: "Out for Delivery",
+      6: "Delivered",
+      7: "Cancelled"
     };
     return statusMap[status] || "Processing";
   };
