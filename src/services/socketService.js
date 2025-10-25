@@ -4,6 +4,8 @@ class SocketService {
   constructor() {
     this.socket = null;
     this.isConnected = false;
+    this.pollingInterval = null;
+    this.lastUpdate = new Date();
   }
 
   connect() {
@@ -23,6 +25,12 @@ class SocketService {
     this.socket.on('disconnect', () => {
       console.log('Disconnected from server');
       this.isConnected = false;
+      this.startPolling();
+    });
+
+    this.socket.on('connect_error', () => {
+      console.log('Socket connection failed, using polling');
+      this.startPolling();
     });
 
     this.socket.on('order-status-update', (data) => {
@@ -38,6 +46,32 @@ class SocketService {
       this.socket = null;
       this.isConnected = false;
     }
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+  }
+
+  startPolling() {
+    if (this.pollingInterval) return;
+    
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://24-7-b.vercel.app';
+    
+    this.pollingInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/realtime/orders/updates?since=${this.lastUpdate.toISOString()}`);
+        const data = await response.json();
+        
+        if (data.success && data.orders.length > 0) {
+          data.orders.forEach(order => {
+            window.dispatchEvent(new CustomEvent('orderStatusUpdate', { detail: order }));
+          });
+          this.lastUpdate = new Date();
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 5000); // Poll every 5 seconds
   }
 
   emitOrderPlaced(orderData) {
