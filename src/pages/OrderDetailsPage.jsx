@@ -308,7 +308,7 @@ const OrderDetailsPage = () => {
           {error}
         </div>
         <button
-          onClick={() => navigate("/orders")}
+          onClick={() => navigate("/orders", { replace: true })}
           className="bg-gray-200 px-4 py-2 rounded-md"
         >
           Back to Orders
@@ -324,7 +324,7 @@ const OrderDetailsPage = () => {
           Order not found
         </div>
         <button
-          onClick={() => navigate("/orders")}
+          onClick={() => navigate("/orders", { replace: true })}
           className="bg-gray-200 px-4 py-2 rounded-md"
         >
           Back to Orders
@@ -337,7 +337,7 @@ const OrderDetailsPage = () => {
     <div className="bg-gray-100 min-h-screen pb-8">
       {/* Header */}
       <div className="bg-white p-4 flex items-center shadow-sm">
-        <button onClick={() => navigate("/orders")} className="mr-4">
+        <button onClick={() => navigate("/orders", { replace: true })} className="mr-4">
           <IoArrowBack size={24} />
         </button>
         <h1 className="text-xl font-semibold">

@@ -649,10 +649,11 @@ export const AppContextProvider = ({ children }) => {
       if (result.success || result.message === "Order placed") {
         // Clear cart on successful order
         setCart({});
-        navigate(`/order-confirmation/${result.orderId || result._id}`);
+        const orderIdToUse = result.order?._id || result.orderId || result._id;
+        navigate(`/order-confirmation/${orderIdToUse}`);
         return {
           success: true,
-          orderId: result.orderId || result._id,
+          orderId: orderIdToUse,
           message: "Order placed successfully",
         };
       } else {

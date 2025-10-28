@@ -1,15 +1,16 @@
 // src/components/OrderConfirmation.jsx
 import React, { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const OrderConfirmation = ({ orderId = "OD123456789" }) => {
+const OrderConfirmation = () => {
+  const { orderId } = useParams();
   const [animate, setAnimate] = useState(false);
   const navigate = useNavigate();
 
   // Sample order details (replace with API data later)
   const orderDetails = {
-    id: orderId,
+    id: orderId || "Unknown",
     date: new Date().toLocaleDateString(),
     time: new Date().toLocaleTimeString(),
     items: [
