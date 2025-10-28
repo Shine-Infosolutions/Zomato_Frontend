@@ -169,13 +169,14 @@ const OrderDetailsPage = () => {
     
     switch (orderDetails.order_status) {
       case 1:
-        return 25;
+        return 20;
       case 2:
       case 3:
+        return 40;
       case 4:
-        return 50;
+        return 60;
       case 5:
-        return 75;
+        return 80;
       case 6:
         return 100;
       case 7:
@@ -363,7 +364,7 @@ const OrderDetailsPage = () => {
           {/* Status points */}
           <div className="flex justify-between relative">
             {/* Pending */}
-            <div className="flex flex-col items-center w-16">
+            <div className="flex flex-col items-center w-12">
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Pending</p>
                 <p className="text-xs text-gray-500">
@@ -371,18 +372,18 @@ const OrderDetailsPage = () => {
                 </p>
               </div>
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
+                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
                 ${
                   orderDetails.order_status >= 1
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
               >
-                <FaCheck size={12} />
+                <FaCheck size={10} />
               </div>
               <div className="h-10 flex items-center">
                 <IoTimeOutline
-                  size={24}
+                  size={20}
                   className={`${
                     orderDetails.order_status === 1
                       ? "text-green-500 ticking-animation"
@@ -393,23 +394,23 @@ const OrderDetailsPage = () => {
             </div>
 
             {/* Preparing */}
-            <div className="flex flex-col items-center w-16">
+            <div className="flex flex-col items-center w-12">
               <div className="h-10 flex items-center">
                 <GiCookingPot
-                  size={24}
+                  size={20}
                   className={`${
                     orderDetails.order_status >= 2
                       ? "text-green-500"
                       : "text-gray-400"
                   } ${
-                    orderDetails.order_status >= 2 && orderDetails.order_status <= 4
+                    orderDetails.order_status >= 2 && orderDetails.order_status <= 3
                       ? "cooking-animation"
                       : ""
                   }`}
                 />
               </div>
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
+                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
                 ${
                   orderDetails.order_status >= 2
                     ? "bg-green-500 text-white"
@@ -417,25 +418,85 @@ const OrderDetailsPage = () => {
                 }`}
               >
                 {orderDetails.order_status >= 2 ? (
-                  <FaCheck size={12} />
+                  <FaCheck size={10} />
                 ) : (
                   <span className="text-xs">2</span>
                 )}
               </div>
               <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">
-                  {orderDetails.order_status >= 4 ? "Prepared" : "Preparing"}
-                </p>
+                <p className="text-xs font-medium">Preparing</p>
                 <p className="text-xs text-gray-500">
                   {orderDetails.order_status >= 2
-                    ? formatTime(orderDetails.status_timestamps?.prepared || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)
+                    ? formatTime(orderDetails.status_timestamps?.preparing || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)
                     : "--:--"}
                 </p>
               </div>
             </div>
 
+            {/* Prepared */}
+            <div className="flex flex-col items-center w-12">
+              <div className="h-10 flex flex-col items-center">
+                <p className="text-xs font-medium">Prepared</p>
+                <p className="text-xs text-gray-500">
+                  {orderDetails.order_status >= 4
+                    ? formatTime(orderDetails.status_timestamps?.prepared || orderDetails.updatedAt)
+                    : "--:--"}
+                </p>
+              </div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
+                ${
+                  orderDetails.order_status >= 4
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {orderDetails.order_status >= 4 ? (
+                  <FaCheck size={10} />
+                ) : (
+                  <span className="text-xs">3</span>
+                )}
+              </div>
+              <div className="h-10 flex items-center">
+                <FaCheckCircle
+                  size={20}
+                  className={`${
+                    orderDetails.order_status >= 4
+                      ? "text-green-500"
+                      : "text-gray-400"
+                  }`}
+                />
+              </div>
+            </div>
+
             {/* Delivering */}
-            <div className="flex flex-col items-center w-16">
+            <div className="flex flex-col items-center w-12">
+              <div className="h-10 flex items-center">
+                <FaMotorcycle
+                  size={20}
+                  className={`${
+                    orderDetails.order_status === 5
+                      ? "text-green-500 animate-bounce"
+                      : orderDetails.order_status >= 5
+                      ? "text-green-500"
+                      : "text-gray-400"
+                  }`}
+                />
+              </div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
+                ${
+                  orderDetails.order_status >= 5
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {orderDetails.order_status >= 5 ? (
+                  <FaCheck size={10} />
+                ) : (
+                  <span className="text-xs">4</span>
+                )}
+              </div>
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivering</p>
                 <p className="text-xs text-gray-500">
@@ -444,60 +505,10 @@ const OrderDetailsPage = () => {
                     : "--:--"}
                 </p>
               </div>
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status >= 5
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status >= 5 ? (
-                  <FaCheck size={12} />
-                ) : (
-                  <span className="text-xs">3</span>
-                )}
-              </div>
-              <div className="h-10 flex items-center">
-                <FaMotorcycle
-                  size={24}
-                  className={`${
-                    orderDetails.order_status === 5
-                      ? "text-green-500 animate-bounce"
-                      : orderDetails.order_status >= 6
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  }`}
-                />
-              </div>
             </div>
 
             {/* Delivered */}
-            <div className="flex flex-col items-center w-16">
-              <div className="h-10 flex items-center">
-                <BsBuildingCheck
-                  size={24}
-                  className={`${
-                    orderDetails.order_status === 6
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  }`}
-                />
-              </div>
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status === 6
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status === 6 ? (
-                  <FaCheck size={12} />
-                ) : (
-                  <span className="text-xs">4</span>
-                )}
-              </div>
+            <div className="flex flex-col items-center w-12">
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivered</p>
                 <p className="text-xs text-gray-500">
@@ -505,6 +516,30 @@ const OrderDetailsPage = () => {
                     ? formatTime(orderDetails.status_timestamps?.delivered || orderDetails.updatedAt)
                     : "--:--"}
                 </p>
+              </div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
+                ${
+                  orderDetails.order_status === 6
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {orderDetails.order_status === 6 ? (
+                  <FaCheck size={10} />
+                ) : (
+                  <span className="text-xs">5</span>
+                )}
+              </div>
+              <div className="h-10 flex items-center">
+                <BsBuildingCheck
+                  size={20}
+                  className={`${
+                    orderDetails.order_status === 6
+                      ? "text-green-500"
+                      : "text-gray-400"
+                  }`}
+                />
               </div>
             </div>
           </div>
