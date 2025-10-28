@@ -20,7 +20,12 @@ export const fetchWithCache = async (url, cacheKey, expiryMinutes = 60) => {
 
       // If no cached data or expired, fetch from API
       console.log(`Cache miss for ${url}, fetching fresh data`);
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       const data = await response.json();
 
       // Clone the response and store in cache with timestamp
@@ -48,4 +53,27 @@ export const fetchWithCache = async (url, cacheKey, expiryMinutes = 60) => {
   console.warn("Cache API not available, fetching without caching");
   const response = await fetch(url);
   return await response.json();
+};
+
+export const clearCache = async () => {
+  if ("caches" in window) {
+    try {
+      await caches.delete("api-cache");
+      console.log("Cache cleared successfully");
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+    }
+  }
+};
+
+export const clearSpecificCache = async (url) => {
+  if ("caches" in window) {
+    try {
+      const cache = await caches.open("api-cache");
+      await cache.delete(url);
+      console.log(`Cache cleared for ${url}`);
+    } catch (error) {
+      console.error("Error clearing specific cache:", error);
+    }
+  }
 };

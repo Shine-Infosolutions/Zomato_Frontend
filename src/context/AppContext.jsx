@@ -464,32 +464,44 @@ export const AppContextProvider = ({ children }) => {
 
   // Fetch categories with caching
   const fetchCategories = async () => {
-    if (categories.length > 0) return;
+    // Always fetch fresh data on localhost
+    if (window.location.hostname !== 'localhost' && categories.length > 0) return;
     
-    // Load from cache first
-    const cached = localStorage.getItem('categories_cache');
-    if (cached) {
-      try {
-        const { data, timestamp } = JSON.parse(cached);
-        // Cache valid for 1 hour
-        if (Date.now() - timestamp < 3600000) {
-          setCategories(data);
-          return;
-        }
-      } catch (e) {}
+    // Load from cache first (only in production)
+    if (window.location.hostname !== 'localhost') {
+      const cached = localStorage.getItem('categories_cache');
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          // Cache valid for 1 hour
+          if (Date.now() - timestamp < 3600000) {
+            setCategories(data);
+            return;
+          }
+        } catch (e) {}
+      }
     }
     
     setCategoriesLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/category/get`);
+      const response = await fetch(`${API_URL}/api/category/get`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       const data = await response.json();
+      console.log('Categories API response:', data);
       if (data.success && data.categories) {
+        console.log('Setting categories:', data.categories);
         setCategories(data.categories);
         // Cache the data
         localStorage.setItem('categories_cache', JSON.stringify({
           data: data.categories,
           timestamp: Date.now()
         }));
+      } else {
+        console.log('No categories found or API failed');
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -499,26 +511,34 @@ export const AppContextProvider = ({ children }) => {
 
   // Fetch items with caching
   const fetchItems = async () => {
-    if (items.length > 0) return;
+    // Always fetch fresh data on localhost
+    if (window.location.hostname !== 'localhost' && items.length > 0) return;
     
-    // Load from cache first
-    const cached = localStorage.getItem('items_cache');
-    if (cached) {
-      try {
-        const { data, timestamp } = JSON.parse(cached);
-        // Cache valid for 1 hour
-        if (Date.now() - timestamp < 3600000) {
-          setItems(data);
-          return;
-        }
-      } catch (e) {}
+    // Load from cache first (only in production)
+    if (window.location.hostname !== 'localhost') {
+      const cached = localStorage.getItem('items_cache');
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          // Cache valid for 1 hour
+          if (Date.now() - timestamp < 3600000) {
+            setItems(data);
+            return;
+          }
+        } catch (e) {}
+      }
     }
     
     setItemsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/item/get`);
+      const response = await fetch(`${API_URL}/api/item/get`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       const data = await response.json();
-      const itemsData = Array.isArray(data) ? data : (data.itemsdata || data.items || data.data || []);
+      const itemsData = data.success ? (data.itemsdata || []) : [];
       setItems(itemsData);
       // Cache the data
       localStorage.setItem('items_cache', JSON.stringify({
@@ -531,8 +551,15 @@ export const AppContextProvider = ({ children }) => {
     setItemsLoading(false);
   };
 
-  // Fetch data on app load
+  // Clear cache and fetch data on app load
   useEffect(() => {
+    // Clear cache on localhost restart
+    if (window.location.hostname === 'localhost') {
+      localStorage.removeItem('categories_cache');
+      localStorage.removeItem('items_cache');
+      setCategories([]);
+      setItems([]);
+    }
     fetchCategories();
     fetchItems();
   }, []);
@@ -698,6 +725,15 @@ export const AppContextProvider = ({ children }) => {
       setItems([]);
       fetchCategories();
       fetchItems();
+    },
+    forceRefreshData: async () => {
+      localStorage.removeItem('categories_cache');
+      localStorage.removeItem('items_cache');
+      setCategories([]);
+      setItems([]);
+      setCategoriesLoading(true);
+      setItemsLoading(true);
+      await Promise.all([fetchCategories(), fetchItems()]);
     },
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
