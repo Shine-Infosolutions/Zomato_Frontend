@@ -129,18 +129,9 @@ const OrderDetailsPage = () => {
     return () => clearInterval(interval);
   }, [orderId]);
 
-  // Force scrollable behavior
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-    document.body.style.height = 'auto';
-    document.documentElement.style.height = 'auto';
-    
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.documentElement.style.height = '';
-    };
-  }, []);
+
+
+
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -344,9 +335,9 @@ const OrderDetailsPage = () => {
   }
 
   return (
-    <div className="bg-gray-100">
+    <>
       {/* Header */}
-      <div className="bg-white p-4 flex items-center shadow-sm sticky top-0 z-10">
+      <div className="bg-white p-4 flex items-center shadow-sm">
         <button onClick={() => navigate("/orders", { replace: true })} className="mr-4">
           <IoArrowBack size={24} className="text-gray-700" />
         </button>
@@ -355,7 +346,8 @@ const OrderDetailsPage = () => {
         </h1>
       </div>
 
-      <div className="max-w-xl mx-auto p-4 pb-8 space-y-4">
+      <div className="bg-gray-100 min-h-screen">
+        <div className="max-w-xl mx-auto p-4 pb-8 space-y-4">
         {/* Order Status Card */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
@@ -501,10 +493,18 @@ const OrderDetailsPage = () => {
             {orderDetails.address_id ? (
               <>
                 <p className="font-medium">
-                  {orderDetails.address_id.house_no || 'N/A'}, {orderDetails.address_id.street || 'N/A'}
+                  {[orderDetails.address_id.house_no, orderDetails.address_id.street]
+                    .filter(Boolean)
+                    .join(', ')}
                 </p>
-                <p>{orderDetails.address_id.city || 'N/A'}, {orderDetails.address_id.state || 'N/A'}</p>
-                <p>{orderDetails.address_id.pincode || 'N/A'}</p>
+                <p>
+                  {[orderDetails.address_id.city, orderDetails.address_id.state]
+                    .filter(Boolean)
+                    .join(', ')}
+                </p>
+                {orderDetails.address_id.pincode && (
+                  <p>{orderDetails.address_id.pincode}</p>
+                )}
               </>
             ) : (
               <p className="text-gray-500">Address information not available</p>
@@ -536,8 +536,9 @@ const OrderDetailsPage = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

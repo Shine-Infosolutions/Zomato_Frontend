@@ -110,7 +110,7 @@ const CartPage = () => {
   };
 
   return (
-    <div className="p-4 pt-0 max-w-xl h-screen mx-auto bg-bgColor">
+    <div className="p-4 pt-0 max-w-xl min-h-screen mx-auto bg-bgColor">
       {/* ...cart clear button and empty cart logic... */}
       {Object.keys(cart).length > 0 && (
         <div className="flex justify-end mb-0">
