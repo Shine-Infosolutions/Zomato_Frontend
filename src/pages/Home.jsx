@@ -109,8 +109,8 @@ const Home = () => {
         />
       </div>
       <CartButton />
-      <BottomSheetModal open={open} onClose={() => setOpen(false)}>
-        <VariationPage food={selectedFood} onClose={handleClose} />
+      <BottomSheetModal open={open && selectedFood} onClose={handleClose}>
+        {selectedFood && <VariationPage food={selectedFood} onClose={handleClose} />}
       </BottomSheetModal>
       {showCustomizationModal && (
         <ItemCustomizationModal

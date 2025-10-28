@@ -45,7 +45,12 @@ const VariationPage = ({
     Object.values(cart).find((item) => item.id === baseVariationId)?.quantity ||
     0;
 
-  const onClose = propOnClose || (() => navigate(-1));
+  const onClose = propOnClose || (() => {
+    // Only navigate if this is a standalone page (not in modal)
+    if (!propOnClose) {
+      navigate(-1);
+    }
+  });
 
   // Use API data directly
   const stableFood = React.useMemo(() => {

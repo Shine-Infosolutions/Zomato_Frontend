@@ -48,7 +48,11 @@ const BottomSheetModal = ({ open, onClose, children, height = "80vh" }) => {
       {/* Dimmed overlay */}
       <div
         className={`bottomsheet-overlay${isActive ? ' active' : ''}`}
-        onClick={onClose}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }}
       />
       {/* Close button just above the modal */}
       {showCloseButton && (
