@@ -331,9 +331,9 @@ const OrderDetailsPage = () => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen pb-8">
       {/* Header */}
-      <div className="bg-white p-4 flex items-center shadow-sm sticky top-0 z-10">
+      <div className="bg-white p-4 flex items-center shadow-sm">
         <button onClick={() => navigate("/orders", { replace: true })} className="mr-4">
           <IoArrowBack size={24} className="text-gray-700" />
         </button>
@@ -342,7 +342,7 @@ const OrderDetailsPage = () => {
         </h1>
       </div>
 
-      <div className="max-w-xl mx-auto p-4 space-y-4">
+      <div className="max-w-xl mx-auto p-4 space-y-4 overflow-y-auto">
         {/* Order Status Card */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
