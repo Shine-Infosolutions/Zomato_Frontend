@@ -367,9 +367,11 @@ const OrderDetailsPage = () => {
             <div className="flex flex-col items-center w-12">
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Pending</p>
-                <p className="text-xs text-gray-500">
-                  {formatTime(orderDetails.createdAt)}
-                </p>
+                {orderDetails.order_status >= 1 && (
+                  <p className="text-xs text-gray-500">
+                    {formatTime(orderDetails.createdAt)}
+                  </p>
+                )}
               </div>
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
@@ -425,11 +427,11 @@ const OrderDetailsPage = () => {
               </div>
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Preparing</p>
-                <p className="text-xs text-gray-500">
-                  {orderDetails.order_status >= 2
-                    ? formatTime(orderDetails.status_timestamps?.preparing || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)
-                    : "--:--"}
-                </p>
+                {orderDetails.order_status >= 2 && (
+                  <p className="text-xs text-gray-500">
+                    {formatTime(orderDetails.status_timestamps?.preparing || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -437,11 +439,11 @@ const OrderDetailsPage = () => {
             <div className="flex flex-col items-center w-12">
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Prepared</p>
-                <p className="text-xs text-gray-500">
-                  {orderDetails.order_status >= 4
-                    ? formatTime(orderDetails.status_timestamps?.prepared || orderDetails.updatedAt)
-                    : "--:--"}
-                </p>
+                {orderDetails.order_status >= 4 && (
+                  <p className="text-xs text-gray-500">
+                    {formatTime(orderDetails.status_timestamps?.prepared || orderDetails.updatedAt)}
+                  </p>
+                )}
               </div>
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
@@ -499,11 +501,11 @@ const OrderDetailsPage = () => {
               </div>
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivering</p>
-                <p className="text-xs text-gray-500">
-                  {orderDetails.order_status >= 5
-                    ? formatTime(orderDetails.status_timestamps?.out_for_delivery || orderDetails.updatedAt)
-                    : "--:--"}
-                </p>
+                {orderDetails.order_status >= 5 && (
+                  <p className="text-xs text-gray-500">
+                    {formatTime(orderDetails.status_timestamps?.out_for_delivery || orderDetails.updatedAt)}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -511,11 +513,11 @@ const OrderDetailsPage = () => {
             <div className="flex flex-col items-center w-12">
               <div className="h-10 flex flex-col items-center">
                 <p className="text-xs font-medium">Delivered</p>
-                <p className="text-xs text-gray-500">
-                  {orderDetails.order_status === 6
-                    ? formatTime(orderDetails.status_timestamps?.delivered || orderDetails.updatedAt)
-                    : "--:--"}
-                </p>
+                {orderDetails.order_status === 6 && (
+                  <p className="text-xs text-gray-500">
+                    {formatTime(orderDetails.status_timestamps?.delivered || orderDetails.updatedAt)}
+                  </p>
+                )}
               </div>
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
