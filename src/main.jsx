@@ -13,7 +13,7 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Navbar from "./components/Navbar.jsx";
 import VariationPage from "./pages/VariationPage.jsx";
-import CartPage from "./pages/CartPage.jsx";
+import NewCartPage from "./pages/NewCartPage.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProfileUpdate from "./components/ProfileUpdate.jsx";
 import OrdersPage from "./pages/OrdersPage";
@@ -96,10 +96,7 @@ const AppRoutes = () => {
           path="/cart"
           element={
             <ProtectedRoute>
-              <>
-                <Navbar />
-                <CartPage />
-              </>
+              <NewCartPage />
             </ProtectedRoute>
           }
         />
