@@ -1,16 +1,12 @@
 // src/pages/OrderDetailsPage.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaClock, FaMotorcycle, FaCheckCircle } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { IoTimeOutline } from "react-icons/io5";
 import { GiCookingPot } from "react-icons/gi";
-import { FaMotorcycle } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
-import { BsBuildingCheck } from "react-icons/bs";
-import { MdOutlineDeliveryDining } from "react-icons/md";
-import { FaDownload } from "react-icons/fa";
+import { MdLocationOn } from "react-icons/md";
+import { BiReceipt } from "react-icons/bi";
 
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
@@ -335,100 +331,63 @@ const OrderDetailsPage = () => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen pb-8">
+    <div className="bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="bg-white p-4 flex items-center shadow-sm">
+      <div className="bg-white p-4 flex items-center shadow-sm sticky top-0 z-10">
         <button onClick={() => navigate("/orders", { replace: true })} className="mr-4">
-          <IoArrowBack size={24} />
+          <IoArrowBack size={24} className="text-gray-700" />
         </button>
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-xl font-semibold text-gray-800">
           Order #{orderDetails._id.slice(-6)}
         </h1>
       </div>
 
-      {/* Order Status Progress Bar */}
-      <div className="bg-white p-6 mb-4">
-        <h2 className="text-lg font-semibold mb-6">Order Status</h2>
+      <div className="max-w-xl mx-auto p-4 space-y-4">
+        {/* Order Status Card */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">Order Status</h2>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              orderDetails.order_status === 6 ? 'bg-green-100 text-green-800' :
+              orderDetails.order_status === 5 ? 'bg-blue-100 text-blue-800' :
+              orderDetails.order_status >= 2 ? 'bg-yellow-100 text-yellow-800' :
+              'bg-gray-100 text-gray-800'
+            }`}>
+              {orderDetails.order_status === 6 ? 'Delivered' :
+               orderDetails.order_status === 5 ? 'Out for Delivery' :
+               orderDetails.order_status === 4 ? 'Prepared' :
+               orderDetails.order_status >= 2 ? 'Preparing' : 'Pending'}
+            </span>
+          </div>
 
-        {/* Progress bar container */}
-        <div className="relative mb-10">
-          {/* Background bar */}
-          <div className="h-1 bg-gray-200 absolute w-[95%] top-13"></div>
-
-          {/* Progress fill */}
-          <div
-            className="h-1 bg-green-500 absolute max-w-[94%] top-13 transition-all duration-1000 ease-out"
-            style={{ width: `${getProgressPercentage()}%` }}
-          ></div>
-
-          {/* Status points */}
-          <div className="flex justify-between relative">
+          {/* Progress Steps */}
+          <div className="space-y-4">
             {/* Pending */}
-            <div className="flex flex-col items-center w-12">
-              <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Pending</p>
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
+                orderDetails.order_status >= 1 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                {orderDetails.order_status >= 1 ? <FaCheck size={14} /> : <FaClock size={14} />}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800">Order Placed</p>
                 {orderDetails.order_status >= 1 && (
-                  <p className="text-xs text-gray-500">
-                    {formatTime(orderDetails.createdAt)}
-                  </p>
+                  <p className="text-sm text-gray-500">{formatTime(orderDetails.createdAt)}</p>
                 )}
-              </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status >= 1
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                <FaCheck size={10} />
-              </div>
-              <div className="h-10 flex items-center">
-                <IoTimeOutline
-                  size={20}
-                  className={`${
-                    orderDetails.order_status === 1
-                      ? "text-green-500 ticking-animation"
-                      : "text-gray-400"
-                  }`}
-                />
               </div>
             </div>
 
             {/* Preparing */}
-            <div className="flex flex-col items-center w-12">
-              <div className="h-10 flex items-center">
-                <GiCookingPot
-                  size={20}
-                  className={`${
-                    orderDetails.order_status >= 2
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  } ${
-                    orderDetails.order_status >= 2 && orderDetails.order_status <= 3
-                      ? "cooking-animation"
-                      : ""
-                  }`}
-                />
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
+                orderDetails.order_status >= 2 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                {orderDetails.order_status >= 2 ? <FaCheck size={14} /> : <GiCookingPot size={14} />}
               </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status >= 2
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status >= 2 ? (
-                  <FaCheck size={10} />
-                ) : (
-                  <span className="text-xs">2</span>
-                )}
-              </div>
-              <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Preparing</p>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800">Preparing</p>
                 {orderDetails.order_status >= 2 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {formatTime(orderDetails.status_timestamps?.preparing || orderDetails.status_timestamps?.accepted || orderDetails.updatedAt)}
                   </p>
                 )}
@@ -436,73 +395,33 @@ const OrderDetailsPage = () => {
             </div>
 
             {/* Prepared */}
-            <div className="flex flex-col items-center w-12">
-              <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Prepared</p>
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
+                orderDetails.order_status >= 4 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                {orderDetails.order_status >= 4 ? <FaCheck size={14} /> : <FaCheckCircle size={14} />}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800">Prepared</p>
                 {orderDetails.order_status >= 4 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {formatTime(orderDetails.status_timestamps?.prepared || orderDetails.updatedAt)}
                   </p>
                 )}
               </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status >= 4
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status >= 4 ? (
-                  <FaCheck size={10} />
-                ) : (
-                  <span className="text-xs">3</span>
-                )}
-              </div>
-              <div className="h-10 flex items-center">
-                <FaCheckCircle
-                  size={20}
-                  className={`${
-                    orderDetails.order_status >= 4
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  }`}
-                />
-              </div>
             </div>
 
-            {/* Delivering */}
-            <div className="flex flex-col items-center w-12">
-              <div className="h-10 flex items-center">
-                <FaMotorcycle
-                  size={20}
-                  className={`${
-                    orderDetails.order_status === 5
-                      ? "text-green-500 animate-bounce"
-                      : orderDetails.order_status >= 5
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  }`}
-                />
+            {/* Out for Delivery */}
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
+                orderDetails.order_status >= 5 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                {orderDetails.order_status >= 5 ? <FaCheck size={14} /> : <FaMotorcycle size={14} />}
               </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status >= 5
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status >= 5 ? (
-                  <FaCheck size={10} />
-                ) : (
-                  <span className="text-xs">4</span>
-                )}
-              </div>
-              <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Delivering</p>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800">Out for Delivery</p>
                 {orderDetails.order_status >= 5 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {formatTime(orderDetails.status_timestamps?.out_for_delivery || orderDetails.updatedAt)}
                   </p>
                 )}
@@ -510,99 +429,98 @@ const OrderDetailsPage = () => {
             </div>
 
             {/* Delivered */}
-            <div className="flex flex-col items-center w-12">
-              <div className="h-10 flex flex-col items-center">
-                <p className="text-xs font-medium">Delivered</p>
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
+                orderDetails.order_status === 6 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                <FaCheck size={14} />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-800">Delivered</p>
                 {orderDetails.order_status === 6 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {formatTime(orderDetails.status_timestamps?.delivered || orderDetails.updatedAt)}
                   </p>
                 )}
               </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center z-10 
-                ${
-                  orderDetails.order_status === 6
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {orderDetails.order_status === 6 ? (
-                  <FaCheck size={10} />
-                ) : (
-                  <span className="text-xs">5</span>
-                )}
-              </div>
-              <div className="h-10 flex items-center">
-                <BsBuildingCheck
-                  size={20}
-                  className={`${
-                    orderDetails.order_status === 6
-                      ? "text-green-500"
-                      : "text-gray-400"
-                  }`}
-                />
-              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Order Details */}
-      <div className="bg-white p-6 mb-4">
-        <h2 className="text-lg font-semibold mb-4">Order Details</h2>
-
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">Order Date</span>
-          <span>
-            {formatDate(orderDetails.createdAt)},{" "}
-            {formatTime(orderDetails.createdAt)}
-          </span>
+        {/* Order Info Card */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center mb-4">
+            <BiReceipt className="text-gray-600 mr-2" size={20} />
+            <h2 className="text-lg font-semibold text-gray-800">Order Information</h2>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Order Date</span>
+              <span className="font-medium">{formatDate(orderDetails.createdAt)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Order Time</span>
+              <span className="font-medium">{formatTime(orderDetails.createdAt)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Payment Method</span>
+              <span className="font-medium">Cash on Delivery</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Payment Status</span>
+              <span className={`font-medium ${
+                orderDetails.payment_status === 'success' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {orderDetails.payment_status === 'success' ? 'Paid' : 'Pending'}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">Payment Status</span>
-          <span>{orderDetails.payment_status}</span>
-        </div>
-      </div>
-
-      {/* Payment Details */}
-      <div className="bg-white p-6" id="bill-details">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Payment Details</h2>
-          <button
-            onClick={generatePDF}
-            className="flex items-center gap-2 text-sm bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100"
-          >
-            <FaDownload size={14} />
-            Download Invoice
-          </button>
-        </div>
-
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">Amount</span>
-          <span>₹{orderDetails.amount?.toFixed(2)}</span>
+        {/* Delivery Address Card */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center mb-4">
+            <MdLocationOn className="text-red-500 mr-2" size={20} />
+            <h2 className="text-lg font-semibold text-gray-800">Delivery Address</h2>
+          </div>
+          <div className="text-gray-700">
+            {orderDetails.address_id ? (
+              <>
+                <p className="font-medium">
+                  {orderDetails.address_id.house_no || 'N/A'}, {orderDetails.address_id.street || 'N/A'}
+                </p>
+                <p>{orderDetails.address_id.city || 'N/A'}, {orderDetails.address_id.state || 'N/A'}</p>
+                <p>{orderDetails.address_id.pincode || 'N/A'}</p>
+              </>
+            ) : (
+              <p className="text-gray-500">Address information not available</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex justify-between text-sm mb-4">
-          <span className="text-gray-600">GST ({orderDetails.gst}%)</span>
-          <span>
-            ₹{((orderDetails.amount * orderDetails.gst) / 100).toFixed(2)}
-          </span>
-        </div>
-
-        <div className="flex justify-between font-semibold pt-3 border-t border-gray-100">
-          <span>Total</span>
-          <span>₹{orderDetails.amount?.toFixed(2)}</span>
-        </div>
-
-        {/* Payment Status */}
-        <div className="mt-4 pt-3 border-t border-gray-100">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Payment Status</span>
-            <span className="text-green-600 font-medium">
-              {orderDetails.payment_status}
-            </span>
+        {/* Bill Details Card */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Bill Details</h2>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Item Total</span>
+              <span className="font-medium">₹{orderDetails.amount?.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">GST ({orderDetails.gst}%)</span>
+              <span className="font-medium">₹{((orderDetails.amount * orderDetails.gst) / 100).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Delivery Fee</span>
+              <span className="font-medium">₹40.00</span>
+            </div>
+            <hr className="my-3" />
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Total Amount</span>
+              <span className="text-green-600">₹{(orderDetails.amount + 40).toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>

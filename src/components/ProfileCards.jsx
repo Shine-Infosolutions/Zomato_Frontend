@@ -34,7 +34,7 @@ const ProfileCards = () => {
             <img src={rupeeSVG} alt="" />{" "}
           </div>
           <div>
-            <span className="text-gray-600 text-sm ml-5">Coming soon...</span>
+            <span className="text-md text-black ml-5">WALLET</span>
           </div>
         </div>
 

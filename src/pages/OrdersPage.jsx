@@ -204,7 +204,7 @@ const OrdersPage = () => {
     return false;
   });
   return (
-    <div className="max-w-xl bg-gray-200 mx-auto p-4 pb-20 pt-0">
+    <div className="max-w-xl bg-gray-200 mx-auto p-4 pb-20 pt-0 min-h-screen">
       <h1 className="text-2xl font-bold mb-4">My Orders</h1>
 
       {/* Search Bar */}
