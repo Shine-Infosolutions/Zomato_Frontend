@@ -96,10 +96,7 @@ const AppRoutes = () => {
           path="/cart"
           element={
             <ProtectedRoute>
-              <>
-                <Navbar />
-                <CartPage />
-              </>
+              <CartPage />
             </ProtectedRoute>
           }
         />

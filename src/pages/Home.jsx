@@ -97,6 +97,18 @@ const Home = () => {
     setSelectedCategory(category);
   };
 
+  const resetCategoryFilter = () => {
+    setSelectedCategory(null);
+  };
+
+  // Make reset function available globally for the Recommendation component
+  useEffect(() => {
+    window.resetCategoryFilter = resetCategoryFilter;
+    return () => {
+      delete window.resetCategoryFilter;
+    };
+  }, []);
+
   return (
     <div className="max-w-xl mx-auto">
       <Header selectedAddress={selectedAddress} onSearchSelect={setSearchFilter} />
@@ -106,6 +118,7 @@ const Home = () => {
         <Recommendation
           onFoodClick={handleFoodClick}
           selectedCategory={selectedCategory}
+          onResetCategory={resetCategoryFilter}
         />
       </div>
       <CartButton />

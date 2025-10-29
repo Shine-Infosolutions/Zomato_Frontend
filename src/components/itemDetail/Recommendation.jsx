@@ -20,7 +20,7 @@ import axios from "axios";
 //   // Add more categories as needed
 // };
 
-const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
+const Recommendation = ({ food, onFoodClick, selectedCategory, onResetCategory }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [originalCategories, setOriginalCategories] = useState([]);
@@ -103,8 +103,7 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
           addon: item.addon || []
         }));
         
-        console.log('Items fetched:', items);
-        console.log('Categories fetched:', categoriesResponse);
+
         
         // Create category mapping
         const categoryMapping = {};
@@ -169,15 +168,39 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
   useEffect(() => {
     let newCategories = JSON.parse(JSON.stringify(originalCategories));
 
+    // Filter by selected category first if one is selected
+    if (selectedCategory) {
+      const selectedCategoryName = (selectedCategory.category || selectedCategory.name || '').replace(/"/g, '');
+      const selectedCategoryId = selectedCategory._id;
+      
+      newCategories = newCategories.filter((category) => {
+        // Match by name or by checking if items belong to the selected category
+        const nameMatch = category.name === selectedCategoryName;
+        const idMatch = category.items.some(item => item.categoryId === selectedCategoryId);
+        return nameMatch || idMatch;
+      });
+    }
+
     // Apply quick filter if active (takes priority over veg mode)
     if (activeQuickFilter) {
       newCategories = newCategories.map((category) => {
         const filteredItems = category.items.filter((item) => {
           switch (activeQuickFilter) {
             case "Veg Only":
-              return item.veg === true || item.veg === 1 || item.veg === "true";
+              return item.veg === true || 
+                     item.veg === 1 || 
+                     item.veg === "true" ||
+                     item.veg === "1" ||
+                     (typeof item.veg === 'string' && item.veg.toLowerCase() === 'veg') ||
+                     item.name.toLowerCase().includes('veg');
             case "Non-Veg":
-              return item.veg === false || item.veg === 0 || item.veg === "false" || !item.veg;
+              const isVeg = item.veg === true || 
+                           item.veg === 1 || 
+                           item.veg === "true" ||
+                           item.veg === "1" ||
+                           (typeof item.veg === 'string' && item.veg.toLowerCase() === 'veg') ||
+                           item.name.toLowerCase().includes('veg');
+              return !isVeg;
             case "Less than ₹200":
               return item.price < 200;
             case "Bestseller":
@@ -237,18 +260,32 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
     if (newCategories.length > 0) {
       setExpandedAccordion(newCategories[0].name);
     }
-  }, [activeFilter, activeQuickFilter, originalCategories, vegModeEnabled]);
+  }, [activeFilter, activeQuickFilter, originalCategories, vegModeEnabled, selectedCategory]);
 
   // Effect to handle selected category changes
   useEffect(() => {
     if (selectedCategory && filteredCategories.length > 0) {
+      // Get the category name from the selected category object
+      const selectedCategoryName = (selectedCategory.category || selectedCategory.name || '').replace(/"/g, '');
+      
       // Find the category with matching name
       const categoryToExpand = filteredCategories.find(
-        (cat) => cat.name === selectedCategory.name
+        (cat) => cat.name === selectedCategoryName
       );
 
       if (categoryToExpand) {
         setExpandedAccordion(categoryToExpand.name);
+      } else {
+        // If exact match not found, try to find by category ID
+        const categoryById = filteredCategories.find(
+          (cat) => {
+            // Check if any items in this category match the selected category ID
+            return cat.items.some(item => item.categoryId === selectedCategory._id);
+          }
+        );
+        if (categoryById) {
+          setExpandedAccordion(categoryById.name);
+        }
       }
     }
   }, [selectedCategory, filteredCategories]);
@@ -303,7 +340,32 @@ const Recommendation = ({ food, onFoodClick, selectedCategory }) => {
 
   return (
     <div className="p-3 bg-white">
-      <h2 className="text-lg font-semibold mb-4">Recommendations</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Recommendations</h2>
+        {selectedCategory && (
+          <button
+            onClick={() => {
+              if (onResetCategory) {
+                onResetCategory();
+              } else {
+                // Fallback: scroll back to top and reload
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => window.location.reload(), 500);
+              }
+            }} 
+            className="text-xs text-red-600 hover:text-red-800 underline"
+          >
+            Show All Categories
+          </button>
+        )}
+      </div>
+      {selectedCategory && (
+        <div className="mb-3 p-2 bg-red-50 rounded-md border border-red-200">
+          <p className="text-sm text-red-800">
+            Showing items for: <span className="font-medium">{(selectedCategory.category || selectedCategory.name || '').replace(/"/g, '')}</span>
+          </p>
+        </div>
+      )}
 
       {/* Filter section */}
       <div className="mb-4">

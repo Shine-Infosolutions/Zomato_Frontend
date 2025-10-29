@@ -149,7 +149,7 @@ const ProfileUpdate = () => {
         </div>
         <h2 className="text-xl font-bold">{formData.name || 'User'}</h2>
         <p className="text-gray-600">{formData.email}</p>
-        <p className="text-sm text-gray-500 mt-2">Coming soon...</p>
+        <p className="text-xl text-black mt-2">WALLET</p>
         <div className="flex items-center justify-center mt-2">
           <span className="text-lg font-semibold">Money ₹0</span>
         </div>
