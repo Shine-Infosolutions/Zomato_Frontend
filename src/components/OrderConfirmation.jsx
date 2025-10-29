@@ -2,30 +2,110 @@
 import React, { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
   const [animate, setAnimate] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { addresses } = useAppContext();
 
-  // Sample order details (replace with API data later)
-  const orderDetails = {
-    id: orderId || "Unknown",
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString(),
-    items: [
-      { name: "Butter Chicken", quantity: 1, price: 350 },
-      { name: "Garlic Naan", quantity: 2, price: 60 },
-    ],
-    total: 470,
-    deliveryAddress: "123 Main Street, Apartment 4B",
-    paymentMethod: "Cash on Delivery",
-  };
+  useEffect(() => {
+    const getOrderDetails = () => {
+      try {
+        // Get stored order data
+        const storedOrderData = localStorage.getItem(`order_${orderId}`);
+        
+        if (storedOrderData) {
+          const orderData = JSON.parse(storedOrderData);
+          
+          // Find address details
+          const address = addresses.find(addr => addr._id === orderData.addressId) || {};
+          const addressText = address.house_no ? 
+            `${address.house_no}, ${address.street}, ${address.city}` : 
+            'Address not available';
+          
+          const formattedOrder = {
+            id: orderId,
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+            items: orderData.items || [],
+            total: Math.round(orderData.total || 0),
+            deliveryAddress: addressText,
+            paymentMethod: "Cash on Delivery",
+          };
+          
+          setOrderDetails(formattedOrder);
+          
+          // Clean up stored order data after use
+          localStorage.removeItem(`order_${orderId}`);
+        } else {
+          // Fallback if no stored data
+          setOrderDetails({
+            id: orderId,
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+            items: [],
+            total: 0,
+            deliveryAddress: 'Address not available',
+            paymentMethod: "Cash on Delivery",
+          });
+        }
+      } catch (error) {
+        console.error('Error getting order details:', error);
+        // Final fallback
+        setOrderDetails({
+          id: orderId,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          items: [],
+          total: 0,
+          deliveryAddress: 'Address not available',
+          paymentMethod: "Cash on Delivery",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (orderId) {
+      getOrderDetails();
+    }
+  }, [orderId, addresses]);
 
   useEffect(() => {
     // Start animation after component mounts
     setTimeout(() => setAnimate(true), 100);
   }, []);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p>Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!orderDetails) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Order not found</p>
+          <button
+            onClick={() => navigate("/")}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">

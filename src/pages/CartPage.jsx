@@ -68,10 +68,25 @@ const CartPage = () => {
     setOrderError(null);
 
     try {
+      // Store order data before placing order (cart will be cleared after successful order)
+      const orderData = {
+        items: Object.values(cart).map(item => ({
+          name: item.name || 'Unknown Item',
+          quantity: item.quantity || 1,
+          price: parseFloat(item.price?.toString().replace(/[^\d.]/g, '')) || 0
+        })),
+        subtotal,
+        deliveryFee,
+        gst,
+        total: subtotal + deliveryFee + gst,
+        addressId: selectedAddressId
+      };
+      
       const result = await placeOrder();
       if (result.success) {
-        alert(result.message);
-        navigate(`/orders/${result.orderId}`);
+        // Store order data for confirmation page
+        localStorage.setItem(`order_${result.orderId}`, JSON.stringify(orderData));
+        navigate(`/order-confirmation/${result.orderId}`);
       } else {
         setOrderError(result.message);
       }
